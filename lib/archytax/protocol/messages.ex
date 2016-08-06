@@ -37,6 +37,7 @@ defmodule Archytax.Protocol.Messages do
     @I2C_MAX_QUERIES             8
     @I2C_REGISTER_NOT_SPECIFIED  -1
 
+    @MODES [:input :output :analog :pwm :servo :shift :i2c :onewire :stepper :encoder :serial :pullup :ignore]
     defp to_hex(<<byte>>) do
     "0x"<>Integer.to_string(byte, 16)
     end
