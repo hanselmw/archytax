@@ -1,5 +1,6 @@
 defmodule Archytax.Protocol.Messages do
   defmacro __using__(_) do
+    # SysEx commands
     @RESERVED               0x00-0x0F # The first 16 bytes are reserved for custom commands
     @SERIAL_MESSAGE              0x60 # communicate with serial devices, including other boards
     @ENCODER_DATA                0x61 # reply with encoders current positions
@@ -35,5 +36,9 @@ defmodule Archytax.Protocol.Messages do
     @I2C_RESTART_TX              0
     @I2C_MAX_QUERIES             8
     @I2C_REGISTER_NOT_SPECIFIED  -1
+
+    defp to_hex(<<byte>>) do
+    "0x"<>Integer.to_string(byte, 16)
+    end
   end
 end
