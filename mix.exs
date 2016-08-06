@@ -1,12 +1,14 @@
-defmodule Archytasda.Mixfile do
+defmodule Archytax.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :archytasda,
-     version: "0.1.0",
+    [app: :archytax,
+     version: "0.0.1",
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     description: description,
+     package: package,
      deps: deps()]
   end
 
@@ -28,5 +30,22 @@ defmodule Archytasda.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     []
+  end
+  
+  defp description do
+    """
+    """
+  end
+
+  defp package do
+    [
+      files: ["lib", "mix.exs", "README.md", "LICENSE.txt"],
+      maintainers: ["Keyvan Fatehi"],
+      licenses: ["GPL"],
+      links: %{
+        "GitHub" => "https://github.com/hanselmw/archytax",
+        "Firmata Protocol" => "https://github.com/firmata/protocol"
+      }
+    ]
   end
 end

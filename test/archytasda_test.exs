@@ -1,6 +1,6 @@
-defmodule ArchytasdaTest do
+defmodule ArchytaxTest do
   use ExUnit.Case
-  doctest Archytasda
+  doctest Archytax
 
   test "the truth" do
     assert 1 + 1 == 2

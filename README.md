@@ -1,4 +1,4 @@
-# Archytasda
+# Archytax
 
 **TODO: Add description**
 
@@ -6,19 +6,19 @@
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
-  1. Add `archytasda` to your list of dependencies in `mix.exs`:
+  1. Add `archytax` to your list of dependencies in `mix.exs`:
 
     ```elixir
     def deps do
-      [{:archytasda, "~> 0.1.0"}]
+      [{:archytax, "~> 0.1.0"}]
     end
     ```
 
-  2. Ensure `archytasda` is started before your application:
+  2. Ensure `archytax` is started before your application:
 
     ```elixir
     def application do
-      [applications: [:archytasda]]
+      [applications: [:archytax]]
     end
     ```
 

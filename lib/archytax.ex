@@ -1,0 +1,2 @@
+defmodule Archytax do
+end

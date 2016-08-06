@@ -14,7 +14,7 @@ use Mix.Config
 #
 # And access this configuration in your application as:
 #
-#     Application.get_env(:archytasda, :key)
+#     Application.get_env(:archytax, :key)
 #
 # Or configure a 3rd-party app:
 #
