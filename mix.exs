@@ -7,8 +7,8 @@ defmodule Archytax.Mixfile do
      elixir: "~> 1.3",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     description: description,
-     package: package,
+     description: description(),
+     package: package(),
      deps: deps()]
   end
 
@@ -32,12 +32,13 @@ defmodule Archytax.Mixfile do
     []
   end
   
-  defp description do
+  defp description() do
     """
+    An implementation of the Firmata protocol for elixir.
     """
   end
 
-  defp package do
+  defp package() do
     [
       files: ["lib", "mix.exs", "README.md", "LICENSE.txt"],
       maintainers: ["Keyvan Fatehi"],
