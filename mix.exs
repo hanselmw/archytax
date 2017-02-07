@@ -17,6 +17,7 @@ defmodule Archytax.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger]]
+    [applications: [:nerves_uart]]
   end
 
   # Dependencies can be Hex packages:
@@ -29,7 +30,7 @@ defmodule Archytax.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [{:nerves_uart, "~> 0.1.1"}]
   end
   
   defp description() do
