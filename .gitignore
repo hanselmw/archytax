@@ -1,0 +1,18 @@
+### Elixir ###
+/_build
+/cover
+/deps
+erl_crash.dump
+*.ez
+*.beam
+
+### Erlang ###
+.eunit
+deps
+*.beam
+*.plt
+ebin
+rel/example_project
+.concrete/DEV_MODE
+.rebar
+
