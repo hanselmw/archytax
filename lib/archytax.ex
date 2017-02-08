@@ -33,7 +33,7 @@ defmodule Archytax do
   def handle_call({:send_message, message}, _from, state) do
     case Board.send(state.board, message) do
       :ok ->
-        {:reply, "Message sent", state}
+        {:reply, :ok , state}
       {:error, reason} ->
         {:reply, {:error, reason}, state}
       _ ->
