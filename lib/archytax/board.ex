@@ -12,6 +12,8 @@ defmodule Archytax.Board do
         {:error, "The specified port is already open."}
       {:error, :eacces} ->
         {:error, "Permission denied on specified port."}
+      {:error, something_else} ->
+        {:error, something_else}
       _ ->
         {:error, "Unknown error"}
     end

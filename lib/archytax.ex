@@ -1,4 +1,5 @@
 defmodule Archytax do
+  require IEx
   use GenServer
   use Archytax.Protocol.Messages
   alias Archytax.Board, as: Board
@@ -21,8 +22,9 @@ defmodule Archytax do
   # Callback Functions #
   ######################
   def init({device_port, opts }) do
+    speed = opts[:speed] || 9600
     {:ok, board} = Board.init
-    {:ok, response} = Board.open(board, device_port, 9600, true)
+    {:ok, response} = Board.open(board, device_port, speed, true)
     state = %{}
     state = Map.put(state, :board, board)
     {:ok, state}
