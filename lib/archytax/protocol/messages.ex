@@ -1,6 +1,7 @@
 defmodule Archytax.Protocol.Messages do
   defmacro __using__(_) do
     quote do
+      use Bitwise
       # SysEx commands
       @reserved               0x00-0x0F # the first 16 bytes are reserved for custom commands
       @serial_message              0x60 # communicate with serial devices, including other boards

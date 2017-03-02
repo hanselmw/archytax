@@ -1,9 +1,7 @@
 defmodule Archytax do
   require IEx
   use GenServer
-  use Archytax.Protocol.Messages
-  use Archytax.Protocol.MessageTypes
-  use Archytax.Protocol.Modes
+  alias Archytax.Protocol.Sysex, as: Sysex
   alias Archytax.Board, as: Board
   #######
   # API #
@@ -32,6 +30,7 @@ defmodule Archytax do
     Nerves.UART.write(board, <<0xF9>>)
     state = %{}
     state = Map.put(state, :board, board)
+    state = Map.put(state, :code_bin, {})
     {:ok, state}
   end
 
@@ -60,6 +59,21 @@ defmodule Archytax do
   # Messages from board to serial
   def handle_info({:nerves_uart, _port, data}, state) do
     IO.inspect data
+    outbox = []
+    code_bin = state.code_bin
+    {outbox, code_bin} = Sysex.parse({outbox, code_bin}, data)
+    {:noreply, state}
+  end
+
+  def handle_info({:report_version, major, minor }, state) do
+    IO.puts "Version #{major}.#{minor}"
+    state = state |> Map.put(:version, {major, minor})
+    {:noreply, state}
+  end
+
+  def handle_info({:firmware_name, name}, state) do
+    IO.puts name
+    state = state |> Map.put(:firmware_name, name)
     {:noreply, state}
   end
 end
