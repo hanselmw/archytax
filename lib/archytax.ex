@@ -30,7 +30,7 @@ defmodule Archytax do
     Nerves.UART.write(board, <<0xF9>>)
     state = %{}
     state = Map.put(state, :board, board)
-    state = Map.put(state, :code_bin, {})
+    state = Map.put(state, :code_bin, <<>>)
     {:ok, state}
   end
 
@@ -60,12 +60,15 @@ defmodule Archytax do
   def handle_info({:nerves_uart, _port, data}, state) do
     IO.inspect data
     outbox = []
-    code_bin = state.code_bin
-    {outbox, code_bin} = Sysex.parse({outbox, code_bin}, data)
+    new_byte_string = << >>
+    bytes_string = state.code_bin <> data
+    {outbox, new_byte_string} = Sysex.parse({outbox, << >>}, bytes_string)
+    state = Map.put(state, :code_bin, new_byte_string)
+    Enum.each(outbox, fn(instruction) -> send(self(), instruction) end)
     {:noreply, state}
   end
 
-  def handle_info({:report_version, major, minor }, state) do
+  def handle_info({:only_version, major, minor }, state) do
     IO.puts "Version #{major}.#{minor}"
     state = state |> Map.put(:version, {major, minor})
     {:noreply, state}
