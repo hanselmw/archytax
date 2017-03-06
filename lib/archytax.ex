@@ -26,8 +26,8 @@ defmodule Archytax do
     speed = opts[:speed] || 57600
     {:ok, board} = Board.init
     {:ok, _response} = Board.open(board, device_port, speed, true)
-    Nerves.UART.write(board, <<0xFF>>)
-    Nerves.UART.write(board, <<0xF9>>)
+    Nerves.UART.write(board, <<0xFF>>) # Reset device
+    Nerves.UART.write(board, <<0xF9>>) # Query protocol version
     state = %{}
     state = Map.put(state, :board, board)
     state = Map.put(state, :code_bin, <<>>)
@@ -77,6 +77,12 @@ defmodule Archytax do
   def handle_info({:firmware_name, name}, state) do
     IO.puts name
     state = state |> Map.put(:firmware_name, name)
+    {:noreply, state}
+  end
+
+  def handle_info(anything, state) do
+    IO.inspect anything
+    IO.puts "I failed..."
     {:noreply, state}
   end
 end
