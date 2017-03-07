@@ -2,6 +2,7 @@ defmodule Archytax do
   require IEx
   use GenServer
   use Archytax.Protocol.MessageTypes
+  use Archytax.Protocol.Messages
   alias Archytax.Protocol.Sysex, as: Sysex
   alias Archytax.Board, as: Board
   #######
@@ -39,8 +40,8 @@ defmodule Archytax do
     speed = opts[:speed] || 57600
     {:ok, board} = Board.init
     {:ok, _response} = Board.open(board, device_port, speed, true)
-    Nerves.UART.write(board, <<0xFF>>) # Reset device
-    Nerves.UART.write(board, <<0xF9>>) # Query protocol version
+    Board.send(board, <<@system_reset>>) # Reset device
+    Board.send(board, <<@protocol_version>>) # Query protocol version
     state = %{}
     state = Map.put(state, :board, board)
     state = Map.put(state, :code_bin, <<>>)
@@ -112,6 +113,9 @@ defmodule Archytax do
   def handle_info({:firmware_name, name}, state) do
     IO.puts name
     state = state |> Map.put(:firmware_name, name)
+
+    Board.send(state.board, <<@start_sysex, @capability_query, @sysex_end >>) # SECOND QUERY
+
     {:noreply, state}
   end
 
