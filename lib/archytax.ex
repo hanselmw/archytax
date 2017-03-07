@@ -1,6 +1,7 @@
 defmodule Archytax do
   require IEx
   use GenServer
+  use Archytax.Protocol.MessageTypes
   alias Archytax.Protocol.Sysex, as: Sysex
   alias Archytax.Board, as: Board
   #######
@@ -13,6 +14,14 @@ defmodule Archytax do
 
   def write(message) do
     GenServer.call(__MODULE__, {:send_message, message})
+  end
+
+  def set_pin_mode(pin_number, mode) do
+    GenServer.call(__MODULE__, {:set_pin_mode, {pin_number, mode}})
+  end
+
+  def set_digital_pin(pin_number, val) do
+    GenServer.call(__MODULE__, {:set_digital_pin, {pin_number, val}})
   end
 
   def read(time \\ nil) do
@@ -60,9 +69,23 @@ defmodule Archytax do
     end
   end
 
+  def handle_call({:set_pin_mode, {pin, mode}}, _from, state) do
+    Board.send(state.board, << @pin_mode, pin, mode >>)
+    {:reply, :ok, state}
+  end
+
+  def handle_call({:set_digital_pin, {pin, val}}, _from, state) do
+    Board.send(state.board, << @set_digital_pin, pin, val >>)
+    {:reply, :ok, state}
+  end
+
   def handle_call({:get_all}, _from, state) do
     {:reply, {:ok, state}, state}
   end
+
+  ###########################
+  # Info messages Functions #
+  ###########################
 
   # Messages from board to serial
   def handle_info({:nerves_uart, _port, data}, state) do
