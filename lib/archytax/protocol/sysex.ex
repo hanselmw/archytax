@@ -65,7 +65,7 @@ defmodule Archytax.Protocol.Sysex do
         new_map = Map.put(pin, :supported_modes, pin_map)
         new_map = Map.put(new_map, :mode, @unknown)
         # [ new_map | pins_store ]
-        new_pins_map = Map.put(pins_store, pin_number, new_map)
+        Map.put(pins_store, pin_number, new_map)
     end
 
     pins_data = binary_part(data, 0, byte_size(data) - 1) # remove last << 127  >> byte
@@ -78,6 +78,26 @@ defmodule Archytax.Protocol.Sysex do
     # Acumulator is pin_map with a operation instruction
     pins_information = Enum.reduce(pins_array, %{} , insert_pin_map )
     {:capability_response, pins_information}
+  end
+
+  def execute(<< @analog_mapping_response :: size(8), data :: binary >>) do
+    # Initialize pin mode to each pin and insert into pins list
+    insert_pin_information = fn
+      ({byte, pin_number}, pins_store) ->
+        pin = case byte do
+          127 ->
+            %{analog_channel: nil} # doesn't support analog
+          analog_channel_val ->
+            %{analog_channel: analog_channel_val} # analog channel for pin_number
+        end
+        Map.put(pins_store, pin_number, pin) # update pins_store map
+    end
+
+    pins_list = :binary.bin_to_list(data)
+      |> Enum.reverse
+      |> Stream.with_index(0)
+    analog_information = Enum.reduce(pins_list, %{}, insert_pin_information)
+    {:analog_response, analog_information}
   end
 
   def execute(<< unknown :: size(8), _data :: binary >>) do

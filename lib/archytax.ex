@@ -21,6 +21,10 @@ defmodule Archytax do
     GenServer.call(__MODULE__, {:send_message, message})
   end
 
+  def sysex_write(command) do
+    GenServer.call(__MODULE__, {:send_sysex_message, command})
+  end
+
   def set_pin_mode(pin_number, mode) do
     GenServer.call(__MODULE__, {:set_pin_mode, {pin_number, mode}})
   end
@@ -66,6 +70,17 @@ defmodule Archytax do
 
   def handle_call({:send_message, message}, _from, state) do
     case Board.send(state.board, message) do
+      :ok ->
+        {:reply, :ok , state}
+      {:error, reason} ->
+        {:reply, {:error, reason}, state}
+      _ ->
+        {:reply, {:error, "Unknown Reason"}, state}
+    end
+  end
+
+  def handle_call({:send_sysex_message, command}, _from, state) do
+    case Board.send(state.board, <<@start_sysex, command, @sysex_end>>) do
       :ok ->
         {:reply, :ok , state}
       {:error, reason} ->
@@ -143,6 +158,15 @@ defmodule Archytax do
 
   def handle_info({:capability_response, capability}, state) do
     state = state |> Map.put(:pins, capability)
+    Board.send(state.board, << @start_sysex, @analog_mapping_query, @sysex_end >>)
+    {:noreply, state}
+  end
+
+  def handle_info({:analog_response, analog_data}, state) do
+    pins = state.pins
+    new_pins = MapUtils.deep_merge(pins, analog_data)
+    state = state 
+      |> Map.put(:pins, new_pins)
     {:noreply, state}
   end
 
