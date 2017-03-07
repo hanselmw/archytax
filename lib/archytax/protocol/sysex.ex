@@ -72,7 +72,8 @@ defmodule Archytax.Protocol.Sysex do
     pins_data = String.split(pins_data, << 0x7f >>) # 0x7f separate each pin data on the binary
 
     pins_array = Stream.map(pins_data, &(:binary.bin_to_list &1) ) # lazy convert to array to apply enum func
-      |> Stream.with_index(1)
+      |> Enum.reverse
+      |> Stream.with_index(0)
     #OPTIMIZE add validator for supported modes according to firmata before setting mode
     # Acumulator is pin_map with a operation instruction
     pins_information = Enum.reduce(pins_array, %{} , insert_pin_map )
