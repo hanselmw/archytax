@@ -88,6 +88,11 @@ defmodule Archytax do
     {:noreply, state}
   end
 
+  def handle_info({:capability_response, capability}, state) do
+    state = state |> Map.put(:pins, capability)
+    {:noreply, state}
+  end
+
   def handle_info(anything, state) do
     IO.inspect anything
     IO.puts "I failed..."

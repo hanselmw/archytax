@@ -10,7 +10,9 @@ defmodule Archytax.Protocol.Modes do
       @i2c 0x06
       @onewire 0x07
       @stepper 0x08
+      @encoder 0x09
       @serial 0x0a
+      @input_pullup 0x0b
       @ignore 0x7f
       @ping_read 0x75
       @unknown 0x10
@@ -25,7 +27,9 @@ defmodule Archytax.Protocol.Modes do
         @i2c,
         @onewire,
         @stepper,
+        @encoder,
         @serial,
+        @input_pullup,
         @ignore,
         @ping_read,
         @unknown
