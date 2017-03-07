@@ -93,6 +93,11 @@ defmodule Archytax do
   ###########################
 
   # Messages from board to serial
+  def handle_info({:nerves_uart, port, {:error, :eio}}, state ) do
+    IO.puts "The connection with the device on #{port} has been lost."
+    {:noreply, state}
+  end
+  
   def handle_info({:nerves_uart, _port, data}, state) do
     IO.inspect data
     outbox = []
@@ -103,6 +108,7 @@ defmodule Archytax do
     Enum.each(outbox, fn(instruction) -> send(self(), instruction) end)
     {:noreply, state}
   end
+
 
   def handle_info({:only_version, major, minor }, state) do
     IO.puts "Version #{major}.#{minor}"
