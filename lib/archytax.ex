@@ -19,6 +19,10 @@ defmodule Archytax do
     GenServer.call(__MODULE__, {:read, time})
   end
 
+  def get_all() do
+    GenServer.call(__MODULE__, {:get_all})
+  end
+
   ######################
   # Callback Functions #
   ######################
@@ -54,6 +58,10 @@ defmodule Archytax do
       _ ->
         {:reply, {:error, "Unknown reason"}, state} 
     end
+  end
+
+  def handle_call({:get_all}, _from, state) do
+    {:reply, {:ok, state}, state}
   end
 
   # Messages from board to serial

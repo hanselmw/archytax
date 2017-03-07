@@ -45,4 +45,9 @@ defmodule Archytax.Protocol.Sysex do
     {:firmware_name, firmware_name}
   end
 
+  def execute(<< unknown :: size(8), _data :: binary >>) do
+    IO.puts "#{unknown} is not a recognized sysex command."
+    {:unknown}
+  end
+
 end
