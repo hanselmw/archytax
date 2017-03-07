@@ -13,6 +13,10 @@ defmodule Archytax do
     GenServer.start_link(__MODULE__, {device_port, opts}, name: __MODULE__)
   end
 
+  def reconnect(port, opts \\ []) do
+    GenServer.call(__MODULE__, {:reconnect, {port, opts}})
+  end
+
   def write(message) do
     GenServer.call(__MODULE__, {:send_message, message})
   end
@@ -46,6 +50,18 @@ defmodule Archytax do
     state = Map.put(state, :board, board)
     state = Map.put(state, :code_bin, <<>>)
     {:ok, state}
+  end
+
+  def handle_call({:reconnect, {port, opts}}, _from, state) do
+    board = state.board
+    speed = opts[:speed] || 57600
+    {:ok, _response} = Board.open(state.board, port, speed, true)
+    Board.send(board, <<@system_reset>>) # Reset device
+    Board.send(board, <<@protocol_version>>) # Query protocol version
+    new_state = %{}
+    new_state = Map.put(new_state, :board, board)
+    new_state = Map.put(new_state, :code_bin, <<>>)
+    {:reply, :ok, new_state}
   end
 
   def handle_call({:send_message, message}, _from, state) do
@@ -97,7 +113,7 @@ defmodule Archytax do
     IO.puts "The connection with the device on #{port} has been lost."
     {:noreply, state}
   end
-  
+
   def handle_info({:nerves_uart, _port, data}, state) do
     IO.inspect data
     outbox = []
