@@ -94,7 +94,6 @@ defmodule Archytax.Protocol.Sysex do
     end
 
     pins_list = :binary.bin_to_list(data)
-      |> Enum.reverse
       |> Stream.with_index(0)
     analog_information = Enum.reduce(pins_list, %{}, insert_pin_information)
     {:analog_response, analog_information}
