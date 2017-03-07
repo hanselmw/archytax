@@ -28,4 +28,14 @@ defmodule Archytax.Board do
   def read(pid, ms \\ 60000) do
     Nerves.UART.read(pid, ms)
   end
+
+  def update_pin_mode(pins_map, pin, mode) do
+    new_pin_map = Map.put(pins_map[pin], :mode, mode)
+    Map.put(pins_map, pin, new_pin_map)
+  end
+
+  def update_digital_pin_val(pins_map, pin, val) do
+    new_pin_map = Map.put(pins_map[pin], :value, val)
+    Map.put(pins_map, pin, new_pin_map)
+  end
 end
