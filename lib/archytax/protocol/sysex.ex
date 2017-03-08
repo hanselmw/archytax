@@ -40,10 +40,11 @@ defmodule Archytax.Protocol.Sysex do
   #########
 
   def execute(<< @report_firmware :: size(8), data :: binary >>) do
+    << mayor_v :: size(8), minor_v :: size(8), _rest :: binary >> = data
     bin_list = :binary.bin_to_list(data)
     parsed_list = Enum.filter(bin_list, fn(b)-> b in 32..126 end)
     firmware_name = :binary.list_to_bin(parsed_list)
-    {:firmware_name, firmware_name}
+    {:firmware_info, {mayor_v, minor_v, firmware_name}}
   end
 
   def execute(<< @capability_response :: size(8), data :: binary >>) do

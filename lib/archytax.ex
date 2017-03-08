@@ -49,7 +49,6 @@ defmodule Archytax do
     {:ok, board} = Board.init
     {:ok, _response} = Board.open(board, device_port, speed, true)
     Board.send(board, <<@system_reset>>) # Reset device
-    Board.send(board, <<@protocol_version>>) # Query protocol version
     state = %{}
     state = Map.put(state, :board, board)
     state = Map.put(state, :code_bin, <<>>)
@@ -61,7 +60,6 @@ defmodule Archytax do
     speed = opts[:speed] || 57600
     {:ok, _response} = Board.open(state.board, port, speed, true)
     Board.send(board, <<@system_reset>>) # Reset device
-    Board.send(board, <<@protocol_version>>) # Query protocol version
     new_state = %{}
     new_state = Map.put(new_state, :board, board)
     new_state = Map.put(new_state, :code_bin, <<>>)
@@ -159,9 +157,10 @@ defmodule Archytax do
     {:noreply, state}
   end
 
-  def handle_info({:firmware_name, name}, state) do
-    IO.puts name
-    state = state |> Map.put(:firmware_name, name)
+  def handle_info({:firmware_info, {mayor_v, minor_v, firmware_name}}, state) do
+    IO.puts "#{firmware_name}, version #{mayor_v}.#{minor_v}"
+    state = state |> Map.put(:version, {mayor_v, minor_v})
+    state = state |> Map.put(:firmware_name, firmware_name)
 
     Board.send(state.board, <<@start_sysex, @capability_query, @sysex_end >>) # SECOND QUERY
 
