@@ -21,8 +21,8 @@ defmodule Archytax do
     GenServer.call(__MODULE__, {:send_message, message})
   end
 
-  def sysex_write(command) do
-    GenServer.call(__MODULE__, {:send_sysex_message, command})
+  def sysex_write(command, data \\ "") do
+    GenServer.call(__MODULE__, {:send_sysex_message, {command, data}})
   end
 
   def set_pin_mode(pin_number, mode) do
@@ -79,7 +79,7 @@ defmodule Archytax do
     end
   end
 
-  def handle_call({:send_sysex_message, command}, _from, state) do
+  def handle_call({:send_sysex_message, {command, ""}}, _from, state) do
     case Board.send(state.board, <<@start_sysex, command, @sysex_end>>) do
       :ok ->
         {:reply, :ok , state}
@@ -89,6 +89,18 @@ defmodule Archytax do
         {:reply, {:error, "Unknown Reason"}, state}
     end
   end
+
+  def handle_call({:send_sysex_message, {command, data}}, _from, state) do
+    case Board.send(state.board, <<@start_sysex, command, data, @sysex_end>>) do
+      :ok ->
+        {:reply, :ok , state}
+      {:error, reason} ->
+        {:reply, {:error, reason}, state}
+      _ ->
+        {:reply, {:error, "Unknown Reason"}, state}
+    end
+  end
+
 
   def handle_call({:read, time}, _from, state) do
     case Board.read(state.board, time) do
