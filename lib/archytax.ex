@@ -10,6 +10,7 @@ defmodule Archytax do
   #######
 
   def start_link(device_port, opts \\ []) do
+    opts = Keyword.put(opts, :interface, self()) # Set interface PID as the original caller or start_link
     GenServer.start_link(__MODULE__, {device_port, opts}, name: __MODULE__)
   end
 
@@ -52,6 +53,7 @@ defmodule Archytax do
     state = %{}
     state = Map.put(state, :board, board)
     state = Map.put(state, :code_bin, <<>>)
+    state = Map.put(state, :interface, opts[:interface])
     {:ok, state}
   end
 
@@ -162,6 +164,8 @@ defmodule Archytax do
     state = state |> Map.put(:version, {mayor_v, minor_v})
     state = state |> Map.put(:firmware_name, firmware_name)
 
+    contact_interface(state[:interface], {:firmware_info, "#{firmware_name}, version #{mayor_v}.#{minor_v}" })
+
     Board.send(state.board, <<@start_sysex, @capability_query, @sysex_end >>) # SECOND QUERY
 
     {:noreply, state}
@@ -178,6 +182,8 @@ defmodule Archytax do
     new_pins = MapUtils.deep_merge(pins, analog_data)
     state = state 
       |> Map.put(:pins, new_pins)
+    IO.puts "App is ready here."
+    contact_interface(state[:interface], {:ready, state[:pins]})
     {:noreply, state}
   end
 
@@ -185,5 +191,9 @@ defmodule Archytax do
     IO.inspect anything
     IO.puts "I failed..."
     {:noreply, state}
+  end
+
+  defp contact_interface(interface_pid, info) do
+    send(interface_pid, {:archytax, info})
   end
 end
