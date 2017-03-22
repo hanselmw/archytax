@@ -1,43 +1,73 @@
 defmodule Archytax do
+  @moduledoc """
+  This is the Main Module of the Library, 
+  it serves as a bridge for the interface and the Board, 
+  also manage the messages coming from the connected devices. 
+  """
+
   require IEx
   use GenServer
   use Archytax.Protocol.MessageTypes
   use Archytax.Protocol.Messages
   alias Archytax.Protocol.Sysex, as: Sysex
   alias Archytax.Board, as: Board
-  #######
-  # API #
-  #######
+  ############################
+  ############ API ###########
+  ############################
+
 
   def start_link(device_port, opts \\ []) do
     opts = Keyword.put(opts, :interface, self()) # Set interface PID as the original caller or start_link
     GenServer.start_link(__MODULE__, {device_port, opts}, name: __MODULE__)
   end
 
+  @doc """
+  Try to create a new connection using the existing Board GenServer
+  """
   def reconnect(port, opts \\ []) do
     GenServer.call(__MODULE__, {:reconnect, {port, opts}})
   end
 
+  @doc """
+  Send any kind of information to the Board.
+  """
   def write(message) do
     GenServer.call(__MODULE__, {:send_message, message})
   end
 
+  @doc """
+  Issue a sysex command message to the Board.
+  command is always necessary, data is optional for some commands.
+  """
   def sysex_write(command, data \\ "") do
     GenServer.call(__MODULE__, {:send_sysex_message, {command, data}})
   end
 
+  @doc """
+  Set the pin mode of the specified mode, for pin modes codes, check firmata documentation:
+  https://github.com/firmata/protocol/blob/master/protocol.md
+  """
   def set_pin_mode(pin_number, mode) do
     GenServer.call(__MODULE__, {:set_pin_mode, {pin_number, mode}})
   end
 
+  @doc """
+  Set the digital value for the specified pin.
+  """
   def set_digital_pin(pin_number, val) do
     GenServer.call(__MODULE__, {:set_digital_pin, {pin_number, val}})
   end
 
+  @doc """
+  Not gonna make it to the final version.
+  """
   def read(time \\ nil) do
     GenServer.call(__MODULE__, {:read, time})
   end
 
+  @doc """
+  Get the current state of Archytax.
+  """
   def get_all() do
     GenServer.call(__MODULE__, {:get_all})
   end
@@ -68,6 +98,7 @@ defmodule Archytax do
     {:reply, :ok, new_state}
   end
 
+  # Send message to the Board
   def handle_call({:send_message, message}, _from, state) do
     case Board.send(state.board, message) do
       :ok ->
@@ -79,6 +110,7 @@ defmodule Archytax do
     end
   end
 
+  # Send sysex message command without data.
   def handle_call({:send_sysex_message, {command, ""}}, _from, state) do
     case Board.send(state.board, <<@start_sysex, command, @sysex_end>>) do
       :ok ->
@@ -90,6 +122,7 @@ defmodule Archytax do
     end
   end
 
+  # Send sysex message command with data.
   def handle_call({:send_sysex_message, {command, data}}, _from, state) do
     case Board.send(state.board, <<@start_sysex, command, data, @sysex_end>>) do
       :ok ->
@@ -101,7 +134,7 @@ defmodule Archytax do
     end
   end
 
-
+  # ...
   def handle_call({:read, time}, _from, state) do
     case Board.read(state.board, time) do
       {:ok, data} ->
@@ -113,6 +146,7 @@ defmodule Archytax do
     end
   end
 
+  # Update pins map information and set the pin mode as specified.
   def handle_call({:set_pin_mode, {pin, mode}}, _from, state) do
     new_pins_map = Board.update_pin_mode(state.pins, pin, mode)
     state = state |> Map.put(:pins, new_pins_map)
@@ -120,6 +154,7 @@ defmodule Archytax do
     {:reply, :ok, state}
   end
 
+  # Update pins map and set digital value on specified pin.
   def handle_call({:set_digital_pin, {pin, val}}, _from, state) do
     new_pins_map = Board.update_digital_pin_val(state.pins, pin, val)
     state = state |> Map.put(:pins, new_pins_map)
