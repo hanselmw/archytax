@@ -17,17 +17,21 @@ defmodule Archytax.Protocol.Sysex do
   def parse({outbox, code_bin}, << @start_sysex :: size(8), data :: binary >>) do
     last_byte = String.last(data)
     if last_byte == << 0xF7 >> do
-      IO.puts("Here gonna parse sysex")
       # Remove last byte as it is not necessary to execute firmata operation
       parsed_data = binary_part(data, 0, byte_size(data) - 1)
-      IO.inspect parsed_data
       << command :: size(8), command_data :: binary >> = parsed_data
       outbox = [ execute(<< command >> <> command_data) | outbox ]
     else
-      IO.puts("keep storing data")
       code_bin = << @start_sysex, data :: binary >>
     end
     parse({outbox, code_bin}, << >>)
+  end
+
+  # Working with Analog messages
+  def parse({outbox, code_bin}, << analog_byte :: size(8), lsb :: size(8), msb :: size(8),
+                                   data :: binary >>) when analog_byte in @analog_message_range  do
+    outbox = [{:analog_read, {analog_byte, lsb, msb } }]
+    parse({outbox, code_bin}, data)
   end
 
   # Store the data and return

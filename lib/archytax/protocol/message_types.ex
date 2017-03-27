@@ -12,6 +12,9 @@ defmodule Archytax.Protocol.MessageTypes do
       @sysex_end            0xF7 # End sysex 
       @protocol_version     0xF9 # first byte major version, second byte minor version
       @system_reset         0xFF # 
+
+      # Analog 14-bit data format
+      @analog_message_range  0xE0..0xEF
     end
   end
 end

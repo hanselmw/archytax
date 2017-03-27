@@ -222,6 +222,11 @@ defmodule Archytax do
     {:noreply, state}
   end
 
+  def handle_info({:analog_read, {pin, lsb, msb}}, state) do
+    contact_interface(state[:interface], {:analog_read, "pin,#{pin}, #{lsb}(lsb) and #{msb}(msb)"})
+    {:noreply, state}
+  end
+
   def handle_info(anything, state) do
     IO.inspect anything
     IO.puts "I failed..."
