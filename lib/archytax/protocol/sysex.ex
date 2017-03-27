@@ -72,6 +72,10 @@ defmodule Archytax.Protocol.Sysex do
     {:analog_response, analog_information}
   end
 
+  def execute(<< @pin_state_response :: size(8), pin_number :: size(8), pin_mode :: size(8), pin_state :: binary >>) do
+    {:pin_state_response, {pin_number, pin_mode, pin_state}}
+  end
+
   def execute(<< unknown :: size(8), _data :: binary >>) do
     IO.puts "#{unknown} is not a recognized sysex command."
     {:unknown}

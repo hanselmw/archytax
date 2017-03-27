@@ -69,6 +69,14 @@ defmodule Archytax do
   end
 
   @doc """
+  Get the state of the specified `pin`
+  NOTE: The pin state is any data written to the pin (it is important to note that pin state != pin value).
+  """
+  def pin_state_query(pin) do
+    GenServer.call(__MODULE__, {:pin_state_query, pin})
+  end
+
+  @doc """
   Not gonna make it to the final version.
   """
   def read(time \\ nil) do
@@ -180,6 +188,11 @@ defmodule Archytax do
     {:reply, :ok, state}
   end
 
+  def handle_call({:pin_state_query, pin}, _from, state) do
+    Board.send(state.board, <<@start_sysex, @pin_state_query , pin , @sysex_end>>)
+    {:reply, :ok, state}
+  end
+
   def handle_call({:get_all}, _from, state) do
     {:reply, {:ok, state}, state}
   end
@@ -241,6 +254,12 @@ defmodule Archytax do
 
   def handle_info({:analog_read, {pin, value}}, state) do
     contact_interface(state[:interface], {:analog_read, "pin,#{pin}, #{value}(value)"})
+    {:noreply, state}
+  end
+
+  # Send pin state data to the interface in the format {pin_number, pin_mode, pin_state}
+  def handle_info({:pin_state_response, pin_state_data}, state) do
+    contact_interface(state[:interface], {:pin_state_response, pin_state_data})
     {:noreply, state}
   end
 
