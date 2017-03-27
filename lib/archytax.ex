@@ -59,6 +59,16 @@ defmodule Archytax do
   end
 
   @doc """
+  Enable or Disable analog pin reporting according to the  `val` provided for the specified `pin`.
+  disable(0) / enable(non-zero)
+  ## Example
+      iex> Archytax.report_analog_pin(5, 1)
+  """
+  def report_analog_pin(pin, val) do
+    GenServer.call(__MODULE__, {:report_analog_pin, {pin, val}})
+  end
+
+  @doc """
   Not gonna make it to the final version.
   """
   def read(time \\ nil) do
@@ -162,6 +172,14 @@ defmodule Archytax do
     {:reply, :ok, state}
   end
 
+  # Report analog channel
+  # Do Bitwise OR to easily set the correct analog pin value according with Firmata Protocol
+  # from 0xC0 to 0xCF
+  def handle_call({:report_analog_pin, {pin, val}}, _from, state) do
+    Board.send(state.board, << @report_analog_pin ||| pin, val >>)
+    {:reply, :ok, state}
+  end
+
   def handle_call({:get_all}, _from, state) do
     {:reply, {:ok, state}, state}
   end
@@ -179,7 +197,6 @@ defmodule Archytax do
   def handle_info({:nerves_uart, _port, data}, state) do
     IO.inspect data
     outbox = []
-    new_byte_string = << >>
     bytes_string = state.code_bin <> data
     {outbox, new_byte_string} = Sysex.parse({outbox, << >>}, bytes_string)
     state = Map.put(state, :code_bin, new_byte_string)
@@ -222,8 +239,8 @@ defmodule Archytax do
     {:noreply, state}
   end
 
-  def handle_info({:analog_read, {pin, lsb, msb}}, state) do
-    contact_interface(state[:interface], {:analog_read, "pin,#{pin}, #{lsb}(lsb) and #{msb}(msb)"})
+  def handle_info({:analog_read, {pin, value}}, state) do
+    contact_interface(state[:interface], {:analog_read, "pin,#{pin}, #{value}(value)"})
     {:noreply, state}
   end
 

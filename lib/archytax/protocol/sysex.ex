@@ -28,9 +28,10 @@ defmodule Archytax.Protocol.Sysex do
   end
 
   # Working with Analog messages
+  # Return analog byte as the pin and the value operating with the lsb and msb provided
   def parse({outbox, code_bin}, << analog_byte :: size(8), lsb :: size(8), msb :: size(8),
                                    data :: binary >>) when analog_byte in @analog_message_range  do
-    outbox = [{:analog_read, {analog_byte, lsb, msb } }]
+    outbox = [{:analog_read, {analog_byte, lsb ||| (msb <<< 7) } }]
     parse({outbox, code_bin}, data)
   end
 
