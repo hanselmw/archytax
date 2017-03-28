@@ -1,4 +1,8 @@
 defmodule Examples.Example1 do
+  @moduledoc """
+  Pretty basic example of Archytax usage, set pin mode for leds on 13,10,7 to OUTPUT
+  and turn them on
+  """
   use GenServer
 
   def start_link(device_port, opts \\ []) do

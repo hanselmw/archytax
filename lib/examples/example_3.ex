@@ -1,4 +1,8 @@
 defmodule Examples.Example3 do
+  @moduledoc """
+  Show basic usage of report analog channel for channel 5 connected to a Potentiometer and
+  blink leds according to current analog read.
+  """
   use GenServer
 
   # Client

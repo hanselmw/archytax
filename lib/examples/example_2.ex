@@ -1,4 +1,7 @@
 defmodule Examples.Example2 do
+  @moduledoc """
+  Show the usage of a Loop function to turn on and turn off leds on pins 13, 10 and 7 each 5 seconds.
+  """
   use GenServer
 
   def start_link(device_port, opts \\ []) do
