@@ -59,14 +59,31 @@ defmodule Archytax do
   end
 
   @doc """
-  Set the digital value for the specified pin.
+  Set the digital value for the specified `pin_number`.
+  ## Example
+      iex> Archytax.set_digital_pin(13, 1)
+      iex> :ok
+
+      iex> Archytax.set_digital_pin(13, 0)
+      iex> :ok
   """
   def set_digital_pin(pin_number, val) do
     GenServer.call(__MODULE__, {:set_digital_pin, {pin_number, val}})
   end
 
   @doc """
-  Send analog value `val` to the specified `pin`.
+  Send digital MIDI signal value `val` to the specified `pin_number`
+  Note: If possible use set_digital_pin/2 instead.
+  ## Example
+      iex> Archytax.digital_write(13, 1)
+      iex> :ok
+  """
+  def digital_write(pin_number, val) do
+    GenServer.call(__MODULE__, {:digital_write, {pin_number, val}})
+  end
+
+  @doc """
+  Send analog value `val` to the specified `pin_number`.
   Note: `pin_number` must be inside the range from 0 to 15 as specified by MIDI message format.
   ## Example
       iex> Archytax.analog_write(9, 222)
@@ -201,9 +218,18 @@ defmodule Archytax do
 
   # TODO update pin map
   # Update pins map and set analog value on specified pin.
+  def handle_call({:digital_write, {pin, val}}, _from, state) do
+    new_pins_map = Board.update_digital_pin_val(state[:pins], pin, val)
+    state = state
+      |> Map.put(:pins, new_pins_map)
+    Board.send(state.board, Sysex.digital_write_parser(state[:pins], pin)) # Calculate port and lsb, msb values required
+    {:reply, :ok, state}
+  end
+
+  # TODO update pin map
+  # Update pins map and set analog value on specified pin.
   def handle_call({:analog_write, {pin, val}}, _from, state) do
     lsb_msb_binary = Sysex.analog_write_parser(val) # Get the LSB and MSB values from the specified val
-    IO.inspect "#{<< @analog_message ||| pin >> <> lsb_msb_binary}"
     Board.send(state.board, << @analog_message ||| pin >> <> lsb_msb_binary) # Set the correct analog_pin number for the specified pin
     {:reply, :ok, state}
   end

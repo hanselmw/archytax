@@ -120,4 +120,26 @@ defmodule Archytax.Protocol.Sysex do
     << val &&& 0x7F, (val >>> 7) &&& 0xF7 >>
   end
 
+  def digital_write_parser(pins, pin) do
+    # Get the port number (0,1,2)
+    port = pin / 8
+      |> Float.floor
+      |> round
+
+    # Check the state of all the pins associated with the port and
+    # set the port value accordingly to all digital pins state
+    port_value = Enum.reduce(0..8, 0, fn(i, acc) ->
+      index = 8 * port + i # Get the pin number according to the port
+      pin_record = Map.get(pins, index) # Get information of pin at index
+      if pin_record && pin_record[:value] === 1 do
+        acc ||| (1 <<< i)
+      else
+        acc
+      end
+    end)
+
+    # port_value = 0 ||| (1 <<< pin)
+    << @digital_message ||| port, port_value &&& 0x7F, (port_value >>> 7) &&& 0x7F >>
+  end
+
 end
