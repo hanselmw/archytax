@@ -1,8 +1,8 @@
 defmodule Archytax do
   @moduledoc """
-  This is the Main Module of the Library, 
-  it serves as a bridge for the interface and the Board, 
-  also manage the messages coming from the connected devices. 
+  This is the Main Module of the Library,
+  it serves as a bridge for the interface and the Board,
+  also manage the messages coming from the connected devices.
   """
 
   require IEx
@@ -160,7 +160,7 @@ defmodule Archytax do
       {:error, reason} ->
         {:reply, {:error, reason}, state}
       _ ->
-        {:reply, {:error, "Unknown reason"}, state} 
+        {:reply, {:error, "Unknown reason"}, state}
     end
   end
 
@@ -245,7 +245,7 @@ defmodule Archytax do
   def handle_info({:analog_response, analog_data}, state) do
     pins = state.pins
     new_pins = MapUtils.deep_merge(pins, analog_data)
-    state = state 
+    state = state
       |> Map.put(:pins, new_pins)
     IO.puts "App is ready here."
     contact_interface(state[:interface], {:ready, state[:pins]})

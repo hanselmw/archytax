@@ -32,7 +32,7 @@ defmodule Archytax.Mixfile do
   defp deps do
     [{:nerves_uart, "~> 0.1.1"}]
   end
-  
+
   defp description() do
     """
     An implementation of the Firmata protocol for elixir.

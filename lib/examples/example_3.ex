@@ -11,7 +11,7 @@ defmodule Examples.Example3 do
   end
 
   # Server
-  
+
   def init({device_port, opts }) do
     Archytax.start_link(device_port, opts)
     initial_state = %{}
@@ -42,7 +42,7 @@ defmodule Examples.Example3 do
   end
 
   def handle_info({:archytax, {:analog_read, {_pin, value}}}, state) do
-    state = state 
+    state = state
       |> Map.put(:analog_channel_5, value)
     {:noreply, state}
   end
