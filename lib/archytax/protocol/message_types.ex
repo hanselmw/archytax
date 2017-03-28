@@ -2,8 +2,8 @@ defmodule Archytax.Protocol.MessageTypes do
   defmacro __using__(_) do
     quote do
       # Message Types
-      @analog               0xE0 # LSB(bits 0-6)
-      @digital              0x90 # LSB(bits 0-6)
+      @analog_message       0xE0 # LSB(bits 0-6)
+      @digital_message      0x90 # LSB(bits 0-6)
       @report_analog_pin    0xC0 # disable/enable(0/1)
       @report_digital_port  0xD0 # disable/enable(0/1)
       @start_sysex          0xF0 # Start sysex

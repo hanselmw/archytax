@@ -113,4 +113,11 @@ defmodule Archytax.Protocol.Sysex do
     {new_map, {:mode, true}} # set resolution for mode and instruct next byte is mode byte
   end
 
+
+  # UTILITIES
+  # Return the LSB and MSB of val
+  def analog_write_parser(val) do
+    << val &&& 0x7F, (val >>> 7) &&& 0xF7 >>
+  end
+
 end

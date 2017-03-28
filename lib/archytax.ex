@@ -24,6 +24,7 @@ defmodule Archytax do
   @doc """
   Try to create a new connection using the existing Board GenServer
   """
+  # TODO set interface on reconnect
   def reconnect(port, opts \\ []) do
     GenServer.call(__MODULE__, {:reconnect, {port, opts}})
   end
@@ -59,6 +60,17 @@ defmodule Archytax do
   end
 
   @doc """
+  Send analog value `val` to the specified `pin`.
+  Note: `pin_number` must be inside the range from 0 to 15 as specified by MIDI message format.
+  ## Example
+      iex> Archytax.analog_write(9, 222)
+      iex> :ok
+  """
+  def analog_write(pin_number, val) do
+    GenServer.call(__MODULE__, {:analog_write, {pin_number, val}})
+  end
+
+  @doc """
   Enable or Disable analog pin reporting according to the  `val` provided for the specified `pin`.
   disable(0) / enable(non-zero)
   ## Example
@@ -90,9 +102,10 @@ defmodule Archytax do
     GenServer.call(__MODULE__, {:get_all})
   end
 
-  ######################
-  # Callback Functions #
-  ######################
+  ############################################
+  ############# Callback Functions ###########
+  ############################################
+
   def init({device_port, opts }) do
     speed = opts[:speed] || 57600
     {:ok, board} = Board.init
@@ -180,6 +193,15 @@ defmodule Archytax do
     {:reply, :ok, state}
   end
 
+  # TODO update pin map
+  # Update pins map and set analog value on specified pin.
+  def handle_call({:analog_write, {pin, val}}, _from, state) do
+    lsb_msb_binary = Sysex.analog_write_parser(val) # Get the LSB and MSB values from the specified val
+    IO.inspect "#{<< @analog_message ||| pin >> <> lsb_msb_binary}"
+    Board.send(state.board, << @analog_message ||| pin >> <> lsb_msb_binary) # Set the correct analog_pin number for the specified pin
+    {:reply, :ok, state}
+  end
+
   # Report analog channel
   # Do Bitwise OR to easily set the correct analog pin value according with Firmata Protocol
   # from 0xC0 to 0xCF
@@ -208,7 +230,7 @@ defmodule Archytax do
   end
 
   def handle_info({:nerves_uart, _port, data}, state) do
-    # IO.inspect data
+    IO.inspect data
     outbox = []
     bytes_string = state.code_bin <> data
     {outbox, new_byte_string} = Sysex.parse({outbox, << >>}, bytes_string)
