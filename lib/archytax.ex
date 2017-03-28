@@ -38,7 +38,13 @@ defmodule Archytax do
 
   @doc """
   Issue a sysex command message to the Board.
-  command is always necessary, data is optional for some commands.
+  `command` is always required, `data` is optional.
+  ## Example
+      iex> Archytax.sysex_write(<< 0xF0 >>)
+      iex> :ok
+
+      iex> Archytax.sysex_write(<< 0x6F >>, << 9, 127, 1 >>)
+      iex> :ok
   """
   def sysex_write(command, data \\ "") do
     GenServer.call(__MODULE__, {:send_sysex_message, {command, data}})
@@ -155,7 +161,7 @@ defmodule Archytax do
 
   # Send sysex message command with data.
   def handle_call({:send_sysex_message, {command, data}}, _from, state) do
-    case Board.send(state.board, <<@start_sysex, command, data, @sysex_end>>) do
+    case Board.send(state.board, <<@start_sysex >> <> command <> data <> << @sysex_end>>) do
       :ok ->
         {:reply, :ok , state}
       {:error, reason} ->
