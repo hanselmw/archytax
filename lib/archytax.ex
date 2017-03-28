@@ -210,16 +210,15 @@ defmodule Archytax do
 
   # Update pins map and set digital value on specified pin.
   def handle_call({:set_digital_pin, {pin, val}}, _from, state) do
-    new_pins_map = Board.update_digital_pin_val(state.pins, pin, val)
+    new_pins_map = Board.update_pin_value(state.pins, pin, val)
     state = state |> Map.put(:pins, new_pins_map)
     Board.send(state.board, << @set_digital_pin, pin, val >>)
     {:reply, :ok, state}
   end
 
-  # TODO update pin map
   # Update pins map and set analog value on specified pin.
   def handle_call({:digital_write, {pin, val}}, _from, state) do
-    new_pins_map = Board.update_digital_pin_val(state[:pins], pin, val)
+    new_pins_map = Board.update_pin_value(state[:pins], pin, val)
     state = state
       |> Map.put(:pins, new_pins_map)
     Board.send(state.board, Sysex.digital_write_parser(state[:pins], pin)) # Calculate port and lsb, msb values required
@@ -229,6 +228,8 @@ defmodule Archytax do
   # TODO update pin map
   # Update pins map and set analog value on specified pin.
   def handle_call({:analog_write, {pin, val}}, _from, state) do
+    state = state
+      |> Map.put(:pins, Board.update_pin_value(state[:pins], pin, val) )
     lsb_msb_binary = Sysex.analog_write_parser(val) # Get the LSB and MSB values from the specified val
     Board.send(state.board, << @analog_message ||| pin >> <> lsb_msb_binary) # Set the correct analog_pin number for the specified pin
     {:reply, :ok, state}

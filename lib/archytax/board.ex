@@ -34,7 +34,7 @@ defmodule Archytax.Board do
     Map.put(pins_map, pin, new_pin_map)
   end
 
-  def update_digital_pin_val(pins_map, pin, val) do
+  def update_pin_value(pins_map, pin, val) do
     new_pin_map = Map.put(pins_map[pin], :value, val)
     Map.put(pins_map, pin, new_pin_map)
   end
