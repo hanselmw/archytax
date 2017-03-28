@@ -37,7 +37,7 @@ defmodule Archytax.Protocol.Sysex do
 
   # Store the data and return
   def parse({outbox, code_bin}, << data :: binary >>) do
-    IO.inspect(data)
+    # IO.inspect(data)
     parse({outbox, code_bin <> data }, << >>)
   end
   #########
