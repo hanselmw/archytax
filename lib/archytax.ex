@@ -99,6 +99,16 @@ defmodule Archytax do
   ## Example
       iex> Archytax.report_analog_pin(5, 1)
   """
+  def report_digital_port(pin, val) do
+    GenServer.call(__MODULE__, {:report_digital_port, {pin, val}})
+  end
+
+  @doc """
+  Enable or Disable analog pin reporting according to the  `val` provided for the specified `pin`.
+  disable(0) / enable(non-zero)
+  ## Example
+      iex> Archytax.report_analog_pin(5, 1)
+  """
   def report_analog_pin(pin, val) do
     GenServer.call(__MODULE__, {:report_analog_pin, {pin, val}})
   end
@@ -235,6 +245,15 @@ defmodule Archytax do
     {:reply, :ok, state}
   end
 
+  # Report digital port
+  def handle_call({:report_digital_port, {pin, val}}, _from, state) do
+    port = pin / 8
+      |> Float.floor
+      |> round
+    Board.send(state.board, << @report_digital_port ||| port, val >>)
+    {:reply, :ok, state}
+  end
+
   # Report analog channel
   # Do Bitwise OR to easily set the correct analog pin value according with Firmata Protocol
   # from 0xC0 to 0xCF
@@ -263,7 +282,7 @@ defmodule Archytax do
   end
 
   def handle_info({:nerves_uart, _port, data}, state) do
-    IO.inspect data
+    # IO.inspect data
     outbox = []
     bytes_string = state.code_bin <> data
     {outbox, new_byte_string} = Sysex.parse({outbox, << >>}, bytes_string)
@@ -304,6 +323,12 @@ defmodule Archytax do
       |> Map.put(:pins, new_pins)
     IO.puts "App is ready here."
     contact_interface(state[:interface], {:ready, state[:pins]})
+    {:noreply, state}
+  end
+
+  # Send analog data as {pin, value}
+  def handle_info({:digital_read, digital_data}, state) do
+    contact_interface(state[:interface], {:digital_read, digital_data })
     {:noreply, state}
   end
 

@@ -35,6 +35,12 @@ defmodule Archytax.Protocol.Sysex do
     parse({outbox, code_bin}, data)
   end
 
+  def parse({outbox, code_bin}, << digital_byte :: size(8), lsb :: size(8), msb :: size(8),
+                                   data :: binary >>) when digital_byte in @digital_message_range  do
+    outbox = [{:digital_read, {digital_byte, lsb ||| (msb <<< 7) } }]
+    parse({outbox, code_bin}, data)
+  end
+
   # Store the data and return
   def parse({outbox, code_bin}, << data :: binary >>) do
     # IO.inspect(data)
