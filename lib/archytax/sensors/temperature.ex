@@ -7,8 +7,10 @@ defmodule Archytax.Sensors.Temperature do
   Get temperature from voltage in the specified unit of measurement for temperature
   Valid temperatures: `:celsius`, `:fahrenheit`, `:kelvin`.
   ## Examples
-    iex> Archytax.Sensors.Temperature.getTempFromVoltage(:celsius, 0.92773466)
-    iex> 42.7734660
+
+      iex> Archytax.Sensors.Temperature.getTempFromVoltage(:celsius, 0.92773466)
+      iex> 42.7734660
+
   """
   def getTempFromVoltage(:celsius, voltage) do
     (voltage - 0.5) * 100.0
@@ -24,36 +26,36 @@ defmodule Archytax.Sensors.Temperature do
 
 
   @doc """
-  Convert temperature {:from, :to} according to `temp` value.
+  Convert temperature :from, :to according to `temp` value.
   Valid temperature units: `:celsius`, `:fahrenheit`, `:kelvin`.
   ## Examples
-    iex> Archytax.Sensors.Temperature.convertTemp({:celsius, :kelvin}, 31.0)
-    iex> 304.15
+      iex> Archytax.Sensors.Temperature.convertTemp(:celsius, :kelvin, 31.0)
+      iex> 304.15
 
-    iex> Archytax.Sensors.Temperature.convertTemp({:kelvin, :celsius}, 304.15)
-    iex> 31.0
+      iex> Archytax.Sensors.Temperature.convertTemp(:kelvin, :celsius, 304.15)
+      iex> 31.0
   """
-  def convertTemp({:celsius, :fahrenheit}, temp) do
+  def convertTemp(:celsius, :fahrenheit, temp) do
     temp * (9.0/5.0) + 32.0
   end
 
-  def convertTemp({:celsius, :kelvin}, temp) do
+  def convertTemp(:celsius, :kelvin, temp) do
     temp + 273.15
   end
 
-  def convertTemp({:fahrenheit, :celsius}, temp) do
+  def convertTemp(:fahrenheit, :celsius, temp) do
      (temp - 32) * 5.0/9.0
   end
 
-  def convertTemp({:fahrenheit, :kelvin}, temp) do
+  def convertTemp(:fahrenheit, :kelvin, temp) do
     (temp + 459.67) * 5.0/9.0
   end
 
-  def convertTemp({:kelvin, :celsius}, temp) do
+  def convertTemp(:kelvin, :celsius, temp) do
     temp - 273.15
   end
 
-  def convertTemp({:kelvin, :fahrenheit}, temp) do
+  def convertTemp(:kelvin, :fahrenheit, temp) do
     temp * (9.0/5.0) - 459.67
   end
 
