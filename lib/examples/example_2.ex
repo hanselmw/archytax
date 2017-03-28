@@ -21,7 +21,7 @@ defmodule Examples.Example2 do
     Archytax.set_pin_mode(10, 1)
     Archytax.set_pin_mode(7, 1)
 
-    spawn(fn -> loop end)
+    spawn(fn -> loop() end)
     {:noreply, state}
   end
 
@@ -41,7 +41,7 @@ defmodule Examples.Example2 do
     Archytax.set_digital_pin(10,0)
     Archytax.set_digital_pin(7,0)
     :timer.sleep 5000
-    loop
+    loop()
   end
 
 end
