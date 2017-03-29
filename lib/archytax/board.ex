@@ -47,6 +47,11 @@ defmodule Archytax.Board do
     Map.put(pins_map, pin, new_pin_map)
   end
 
+  def report_digital_port(pins_map, pin, report_value) do
+    new_pin_map = Map.put(pins_map[pin], :report, report_value)
+    Map.put(pins_map, pin, new_pin_map)
+  end
+
 
   def parse_digital_message(new_pins_map, _port, _port_value, 8) do
     new_pins_map # return the new pins map with the values updated for the input pins.

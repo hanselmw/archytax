@@ -247,7 +247,6 @@ defmodule Archytax do
     {:reply, :ok, state}
   end
 
-  # TODO update pin map
   # Update pins map and set analog value on specified pin.
   def handle_call({:analog_write, {pin, val}}, _from, state) do
     state = state
@@ -262,6 +261,9 @@ defmodule Archytax do
     port = pin / 8
       |> Float.floor
       |> round
+    state = state
+      |> Map.put(:pins, Board.report_digital_port(state[:pins], pin, val))
+    IO.inspect (state[:pins])
     Board.send(state.board, << @report_digital_port ||| port, val >>)
     {:reply, :ok, state}
   end
