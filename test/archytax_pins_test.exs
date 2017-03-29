@@ -7,6 +7,12 @@ defmodule ArchytaxConnectionTest do
       1 => %{value: 0, mode: 16},
       2 => %{value: 0, mode: 16},
       3 => %{value: 0, mode: 16},
+      4 => %{value: 0, mode: 16},
+      5 => %{value: 0, mode: 16},
+      6 => %{value: 0, mode: 16},
+      7 => %{value: 0, mode: 16},
+      8 => %{value: 0, mode: 16},
+      9 => %{value: 0, mode: 16},
     }
   }
   use ExUnit.Case
