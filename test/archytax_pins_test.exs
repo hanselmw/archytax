@@ -18,7 +18,17 @@ defmodule ArchytaxConnectionTest do
   use ExUnit.Case
 
   test "Do not allow set mode for unexisting pin." do
-    {:reply, {response, _message}, _state} = Archytax.handle_call({:set_pin_mode, {13, 1}}, self(), @example_state)
+    {:reply, {response, _message}, _state} = Archytax.handle_call({:set_pin_mode, {21, 1}}, self(), @example_state)
+    assert response == :error
+  end
+
+  test "Do not allow to set a value on unexisting pin" do
+    {:reply, {response, _message}, _state} = Archytax.handle_call({:set_digital_pin, {21, 1}}, self(), @example_state)
+    assert response == :error
+  end
+
+  test "Do not allow to report digital pin on unexisting pin" do
+    {:reply, {response, _message}, _state} = Archytax.handle_call({:report_digital_port, {21, 1}}, self(), @example_state)
     assert response == :error
   end
 
