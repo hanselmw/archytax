@@ -32,8 +32,13 @@ defmodule Archytax.Board do
   end
 
   def update_pin_mode(pins_map, pin, mode) do
-    new_pin_map = Map.put(pins_map[pin], :mode, mode)
-    Map.put(pins_map, pin, new_pin_map)
+    case pins_map[pin] do
+      nil ->
+        {:error, "Pin not found"}
+      _map -> 
+        new_pin_map = Map.put(pins_map[pin], :mode, mode)
+        {:ok , Map.put(pins_map, pin, new_pin_map)}
+    end
   end
 
   def update_pin_value(pins_map, pin, val) do

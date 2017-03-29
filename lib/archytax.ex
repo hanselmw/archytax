@@ -226,10 +226,14 @@ defmodule Archytax do
 
   # Update pins map information and set the pin mode as specified.
   def handle_call({:set_pin_mode, {pin, mode}}, _from, state) do
-    new_pins_map = Board.update_pin_mode(state.pins, pin, mode)
-    state = state |> Map.put(:pins, new_pins_map)
-    Board.send(state.board, << @pin_mode, pin, mode >>)
-    {:reply, :ok, state}
+    case Board.update_pin_mode(state[:pins], pin , mode) do
+      {:ok, new_pins_map} ->
+        state = state |> Map.put(:pins, new_pins_map)
+        Board.send(state.board, << @pin_mode, pin, mode >>)
+        {:reply, :ok, state}
+      {:error, message} ->
+        {:reply, {:error, message}, state}
+    end
   end
 
   # Update pins map and set digital value on specified pin.
