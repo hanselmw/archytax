@@ -4,7 +4,11 @@ defmodule Archytax.Protocol.Sysex do
   use Archytax.Protocol.Modes
   require IEx
 
+
   # No more bytes to pase. Stop and return current bytestring if exists and complete commands on outbox.
+  @doc """
+  Parse the binaries coming from the Board. Apply the different operations according to leading Byte.
+  """
   def parse({outbox, code_bin}, << >>) do
     {outbox, code_bin}
   end
