@@ -130,6 +130,11 @@ defmodule Archytax do
 
   @doc """
   Get the current pins states and values as a Map.
+  Useful to get the current value of digital pins.
+  ## Examples
+      iex> {:ok, pins} = Archytax.get_pins
+      iex> digital_value = get_in(pins, [13, :value])
+      iex> 1
   """
   def get_pins() do
     GenServer.call(__MODULE__, {:get_pins})
