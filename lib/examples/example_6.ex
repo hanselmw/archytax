@@ -9,8 +9,8 @@ defmodule Examples.Example6 do
     GenServer.start_link(__MODULE__, {device_port, opts}, name: __MODULE__)
   end
 
-  def get_button_value() do
-    GenServer.call(__MODULE__, {:get_button_value})
+  def get_button_value(pin) do
+    GenServer.call(__MODULE__, {:get_button_value, pin})
   end
 
   # Server
@@ -18,13 +18,13 @@ defmodule Examples.Example6 do
   def init({device_port, opts }) do
     Archytax.start_link(device_port, opts)
     initial_state = %{}
-    initial_state = initial_state
-      |> Map.put(:button_value, 32) # Initial value
     {:ok, initial_state}
   end
 
-  def handle_call({:get_button_value}, _from, state) do
-    {:reply, {:ok, state[:button_value]}, state}
+  def handle_call({:get_button_value, pin}, _from, state) do
+    {:ok, pins} = Archytax.get_pins
+    digital_value = get_in(pins, [pin, :value]) || 0
+    {:reply, {:ok, digital_value}, state}
   end
 
   ######################
@@ -32,16 +32,11 @@ defmodule Examples.Example6 do
   ######################
   def handle_info({:archytax, {:ready, _anything}}, state ) do
     IO.puts "Let's go"
-    Archytax.set_pin_mode(13, 0) # Input mode
-    Archytax.report_digital_port(13 ,1) # Report digital port value
+    Archytax.set_pin_mode(13, 1)
+    Archytax.set_pin_mode(7, 0) # Input mode
+    Archytax.report_digital_port(7 ,1) # Report digital port value
 
     spawn(fn -> loop() end)
-    {:noreply, state}
-  end
-
-  def handle_info({:archytax, {:digital_read, {_pin, value}}}, state) do
-    state = state 
-      |> Map.put(:button_value, value)
     {:noreply, state}
   end
 
@@ -51,11 +46,12 @@ defmodule Examples.Example6 do
   end
 
   defp loop do
-    led_val = case Examples.Example6.get_button_value() do
-      {:ok, 32} -> 0 # Button in standby
-      {:ok , 0} -> 1 # Button pressed
+    # button2_val = Examples.Example6.get_button_value(4)
+    led_val = case Examples.Example6.get_button_value(7) do
+      {:ok, 0} -> 1
+      {:ok, 1} -> 0
     end
-    Archytax.set_digital_pin(5, led_val)
+    Archytax.set_digital_pin(13, led_val)
     loop()
   end
 
