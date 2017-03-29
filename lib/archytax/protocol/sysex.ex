@@ -35,9 +35,9 @@ defmodule Archytax.Protocol.Sysex do
     parse({outbox, code_bin}, data)
   end
 
-  def parse({outbox, code_bin}, << digital_byte :: size(8), lsb :: size(8), msb :: size(8),
-                                   data :: binary >>) when digital_byte in @digital_message_range  do
-    outbox = [{:digital_read, {digital_byte, lsb ||| (msb <<< 7) } }]
+  def parse({outbox, code_bin}, << port_byte :: size(8), lsb :: size(8), msb :: size(8),
+                                   data :: binary >>) when port_byte in @digital_message_range  do
+    outbox = [{:digital_read, {port_byte &&& 0x0F , lsb ||| (msb <<< 7) } }]
     parse({outbox, code_bin}, data)
   end
 
@@ -147,5 +147,4 @@ defmodule Archytax.Protocol.Sysex do
     # port_value = 0 ||| (1 <<< pin)
     << @digital_message ||| port, port_value &&& 0x7F, (port_value >>> 7) &&& 0x7F >>
   end
-
 end

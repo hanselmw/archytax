@@ -327,8 +327,10 @@ defmodule Archytax do
   end
 
   # Send analog data as {pin, value}
-  def handle_info({:digital_read, digital_data}, state) do
-    contact_interface(state[:interface], {:digital_read, digital_data })
+  def handle_info({:digital_read, {digital_port, value}}, state) do
+    state = state 
+      |> Map.put(:pins, Board.parse_digital_message(state[:pins], digital_port, value, 0) ) # Update all digital pins which are reporting values
+    contact_interface(state[:interface], {:digital_read, {digital_port, value} })
     {:noreply, state}
   end
 

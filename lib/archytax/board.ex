@@ -1,4 +1,6 @@
 defmodule Archytax.Board do
+  use Bitwise
+  
   def init do
     Nerves.UART.start_link
   end
@@ -44,4 +46,24 @@ defmodule Archytax.Board do
     new_pin_map = Map.put(pins_map[pin], :value, val)
     Map.put(pins_map, pin, new_pin_map)
   end
+
+
+  def parse_digital_message(new_pins_map, _port, _port_value, 8) do
+    new_pins_map # return the new pins map with the values updated for the input pins.
+  end
+
+  # TODO Find a way to set the counter with default value 0 without elixir warning.
+  def parse_digital_message(pins, port, port_value, counter) do
+    index = 8 * port + counter
+    pin_record = Map.get(pins, index)
+    pins = 
+      if pin_record && (pin_record[:mode] == 0 || pin_record[:mode] == 11) do # If pin is set as digital input or pullup get the digital value reading
+        digital_value = (port_value >>> (counter &&& 0x07)) &&& 0x01 # Get the digital value for the pin number IN the port. (0..8)
+        update_pin_value(pins, index, digital_value) # updated pins map
+      else
+        pins # this pin reamins the same
+      end
+    parse_digital_message(pins, port, port_value, counter + 1)
+  end
+
 end
