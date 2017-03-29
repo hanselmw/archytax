@@ -47,6 +47,12 @@ defmodule Archytax.Board do
     Map.put(pins_map, pin, new_pin_map)
   end
 
+  def report_analog_pin(pins_map, analog_channel, report_value) do
+    pin = Enum.find_index(pins_map, fn({_key_number, pin_data}) -> pin_data[:analog_channel] == analog_channel end)
+    new_pin_map = Map.put(pins_map[pin], :report, report_value)
+    Map.put(pins_map, pin, new_pin_map)
+  end
+
   def report_digital_port(pins_map, pin, report_value) do
     new_pin_map = Map.put(pins_map[pin], :report, report_value)
     Map.put(pins_map, pin, new_pin_map)

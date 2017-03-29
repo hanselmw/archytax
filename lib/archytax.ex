@@ -272,6 +272,8 @@ defmodule Archytax do
   # Do Bitwise OR to easily set the correct analog pin value according with Firmata Protocol
   # from 0xC0 to 0xCF
   def handle_call({:report_analog_pin, {pin, val}}, _from, state) do
+    state = state
+      |> Map.put(:pins, Board.report_analog_pin(state[:pins], pin, val))
     Board.send(state.board, << @report_analog_pin ||| pin, val >>)
     {:reply, :ok, state}
   end

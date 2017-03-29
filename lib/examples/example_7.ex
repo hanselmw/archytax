@@ -13,6 +13,10 @@ defmodule Examples.Example7 do
     GenServer.call(__MODULE__, {:get_button_value, pin})
   end
 
+  def test() do
+    GenServer.call(__MODULE__, :test)
+  end
+
   # Server
   
   def init({device_port, opts }) do
@@ -25,6 +29,11 @@ defmodule Examples.Example7 do
     {:ok, pins} = Archytax.get_pins
     digital_value = get_in(pins, [pin, :value]) || 0
     {:reply, {:ok, digital_value}, state}
+  end
+
+  def handle_call(:test, _from, state) do
+    {:ok, pins} = Archytax.get_pins
+    {:reply, {:ok, pins}, state}
   end
 
   ######################
