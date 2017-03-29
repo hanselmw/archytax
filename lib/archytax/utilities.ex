@@ -45,7 +45,7 @@ defmodule Archytax.Utilities do
   Simple wrapper for timer.sleep into microseconds
   """
   def delay_microseconds(microseconds) do
-    :timer.sleep (microseconds/1000) |> round
+    :timer.sleep (microseconds/1000) |> Float.floor |> round
   end
 
 end

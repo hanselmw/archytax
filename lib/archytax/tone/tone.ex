@@ -102,13 +102,32 @@ defmodule Archytax.Tone do
     play(pin, tone_atom, tempo)
   end
 
+  def play(pin, 0, _tempo) do
+    note_duration = 83 / 1 |> Float.floor |> round
+
+    delay_value = 0
+    num_cycles = 0
+
+    IO.puts "Frequency: 0 at #{note_duration}, delay value is : #{delay_value}"
+    IO.puts "Cycles: #{num_cycles}"
+
+    write_note(pin, delay_value, num_cycles)
+  end
+
   def play(pin, tone, tempo) do
-    IO.puts "#{@tones[tone]} at #{tempo}"
-    frequency = @tones[tone] || 1
-    note_duration = 1000 / tempo
-    delay_value = 1000000 / frequency / 2
-    IO.puts delay_value
-    num_cycles = frequency * note_duration / 1000 |> round
+    frequency = cond do
+      is_integer(tone) && tone != 0 ->
+        tone
+      true ->
+        @tones[tone]
+    end
+    note_duration = 1000 / tempo |> Float.floor |> round
+
+    delay_value = 1000000 / frequency / 2 |> Float.floor |> round
+    num_cycles = frequency * note_duration / 1000 |> Float.floor |> round
+
+    IO.puts "Frequency: #{@tones[tone]} at #{note_duration}, delay value is : #{delay_value}"
+    IO.puts "Cycles: #{num_cycles}"
 
     write_note(pin, delay_value, num_cycles)
   end
