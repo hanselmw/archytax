@@ -31,19 +31,20 @@ defmodule Archytax.Board do
     Nerves.UART.read(pid, ms)
   end
 
-  def update_pin_mode(pins_map, pin, mode) do
+  @doc """
+  Update the pin attribute `attribute` for the specified `pin` with `value`.
+  returns the whole `pins_map` with the updated attribute.
+  """
+  def update_pin_attribute(pins_map, pin, attribute, value) do
     case pins_map[pin] do
+      # Not found pin
       nil ->
         {:error, "Pin not found"}
-      _map -> 
-        new_pin_map = Map.put(pins_map[pin], :mode, mode)
+      # Pin found
+      _map ->
+        new_pin_map = Map.put(pins_map[pin], attribute, value)
         {:ok , Map.put(pins_map, pin, new_pin_map)}
     end
-  end
-
-  def update_pin_value(pins_map, pin, val) do
-    new_pin_map = Map.put(pins_map[pin], :value, val)
-    Map.put(pins_map, pin, new_pin_map)
   end
 
   def update_analog_channel_value(pins_map, analog_channel, val) do
@@ -58,12 +59,6 @@ defmodule Archytax.Board do
     Map.put(pins_map, pin, new_pin_map)
   end
 
-  def report_digital_port(pins_map, pin, report_value) do
-    new_pin_map = Map.put(pins_map[pin], :report, report_value)
-    Map.put(pins_map, pin, new_pin_map)
-  end
-
-
   def parse_digital_message(new_pins_map, _port, _port_value, 8) do
     new_pins_map # return the new pins map with the values updated for the input pins.
   end
@@ -75,7 +70,7 @@ defmodule Archytax.Board do
     pins = 
       if pin_record && (pin_record[:mode] == 0 || pin_record[:mode] == 11) do # If pin is set as digital input or pullup get the digital value reading
         digital_value = (port_value >>> (counter &&& 0x07)) &&& 0x01 # Get the digital value for the pin number IN the port. (0..8)
-        update_pin_value(pins, index, digital_value) # updated pins map
+        update_pin_attribute(pins, index, :value, digital_value) # updated pins map
       else
         pins # this pin reamins the same
       end
