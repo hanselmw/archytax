@@ -129,6 +129,13 @@ defmodule Archytax do
   end
 
   @doc """
+  Get the current pins states and values as a Map.
+  """
+  def get_pins() do
+    GenServer.call(__MODULE__, {:get_pins})
+  end
+
+  @doc """
   Get the current state of Archytax.
   """
   def get_all() do
@@ -265,6 +272,10 @@ defmodule Archytax do
   def handle_call({:pin_state_query, pin}, _from, state) do
     Board.send(state.board, <<@start_sysex, @pin_state_query , pin , @sysex_end>>)
     {:reply, :ok, state}
+  end
+
+  def handle_call({:get_pins}, _from, state) do
+    {:reply, {:ok, state[:pins]}, state}
   end
 
   def handle_call({:get_all}, _from, state) do
