@@ -282,7 +282,7 @@ defmodule Archytax do
   end
 
   def handle_info({:nerves_uart, _port, data}, state) do
-    # IO.inspect data
+    IO.inspect data
     outbox = []
     bytes_string = state.code_bin <> data
     {outbox, new_byte_string} = Sysex.parse({outbox, << >>}, bytes_string)
@@ -333,8 +333,10 @@ defmodule Archytax do
   end
 
   # Send analog data as {pin, value}
-  def handle_info({:analog_read, analog_data}, state) do
-    contact_interface(state[:interface], {:analog_read, analog_data })
+  def handle_info({:analog_read, {analog_channel, value}}, state) do
+    state = state
+      |> Map.put(:pins, Board.update_analog_channel_value(state[:pins], analog_channel, value) )
+    contact_interface(state[:interface], {:analog_read, {analog_channel, value} })
     {:noreply, state}
   end
 

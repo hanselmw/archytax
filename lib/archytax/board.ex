@@ -38,4 +38,10 @@ defmodule Archytax.Board do
     new_pin_map = Map.put(pins_map[pin], :value, val)
     Map.put(pins_map, pin, new_pin_map)
   end
+
+  def update_analog_channel_value(pins_map, analog_channel, val) do
+    pin = Enum.find_index(pins_map, fn({_key_number, pin_data}) -> pin_data[:analog_channel] == analog_channel end) # Find pin number for analog channel
+    new_pin_map = Map.put(pins_map[pin], :value, val)
+    Map.put(pins_map, pin, new_pin_map)
+  end
 end
