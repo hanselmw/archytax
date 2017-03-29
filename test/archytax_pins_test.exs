@@ -27,8 +27,18 @@ defmodule ArchytaxConnectionTest do
     assert response == :error
   end
 
+  test "Do not allow to send digital message on unexisting pin" do
+    {:reply, {response, _message}, _state} = Archytax.handle_call({:digital_write, {21, 1}}, self(), @example_state)
+    assert response == :error
+  end
+
   test "Do not allow to report digital pin on unexisting pin" do
     {:reply, {response, _message}, _state} = Archytax.handle_call({:report_digital_port, {21, 1}}, self(), @example_state)
+    assert response == :error
+  end
+
+  test "Do not allow to send analog message on unexisting pin" do
+    {:reply, {response, _message}, _state} = Archytax.handle_call({:analog_write, {21, 1}}, self(), @example_state)
     assert response == :error
   end
 
