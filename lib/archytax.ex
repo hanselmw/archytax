@@ -41,10 +41,10 @@ defmodule Archytax do
   `command` is always required, `data` is optional.
   ## Example
       iex> Archytax.sysex_write(<< 0xF0 >>)
-      iex> :ok
+      :ok
 
       iex> Archytax.sysex_write(<< 0x6F >>, << 9, 127, 1 >>)
-      iex> :ok
+      :ok
   """
   def sysex_write(command, data \\ "") do
     GenServer.call(__MODULE__, {:send_sysex_message, {command, data}})
@@ -62,10 +62,10 @@ defmodule Archytax do
   Set the digital value for the specified `pin_number`.
   ## Example
       iex> Archytax.set_digital_pin(13, 1)
-      iex> :ok
+      :ok
 
       iex> Archytax.set_digital_pin(13, 0)
-      iex> :ok
+      :ok
   """
   def set_digital_pin(pin_number, val) do
     GenServer.call(__MODULE__, {:set_digital_pin, {pin_number, val}})
@@ -76,7 +76,7 @@ defmodule Archytax do
   Note: If possible use set_digital_pin/2 instead.
   ## Example
       iex> Archytax.digital_write(13, 1)
-      iex> :ok
+      :ok
   """
   def digital_write(pin_number, val) do
     GenServer.call(__MODULE__, {:digital_write, {pin_number, val}})
@@ -85,19 +85,20 @@ defmodule Archytax do
   @doc """
   Send analog value `val` to the specified `pin_number`.
   Note: `pin_number` must be inside the range from 0 to 15 as specified by MIDI message format.
-  ## Example
+  ## Examples
       iex> Archytax.analog_write(9, 222)
-      iex> :ok
+      :ok
   """
   def analog_write(pin_number, val) do
     GenServer.call(__MODULE__, {:analog_write, {pin_number, val}})
   end
 
   @doc """
-  Enable or Disable analog pin reporting according to the  `val` provided for the specified `pin`.
+  Enable or Disable digital port reporting according to the  `val` provided for the specified `pin`.
   disable(0) / enable(non-zero)
   ## Example
-      iex> Archytax.report_analog_pin(5, 1)
+      iex> Archytax.report_digital_port(5, 1)
+      :ok
   """
   def report_digital_port(pin, val) do
     GenServer.call(__MODULE__, {:report_digital_port, {pin, val}})
@@ -108,6 +109,7 @@ defmodule Archytax do
   disable(0) / enable(non-zero)
   ## Example
       iex> Archytax.report_analog_pin(5, 1)
+      :ok
   """
   def report_analog_pin(pin, val) do
     GenServer.call(__MODULE__, {:report_analog_pin, {pin, val}})
@@ -134,7 +136,7 @@ defmodule Archytax do
   ## Examples
       iex> {:ok, pins} = Archytax.get_pins
       iex> digital_value = get_in(pins, [13, :value])
-      iex> 1
+      1
   """
   def get_pins() do
     GenServer.call(__MODULE__, {:get_pins})
@@ -243,6 +245,7 @@ defmodule Archytax do
     new_pins_map = Board.update_pin_value(state[:pins], pin, val)
     state = state
       |> Map.put(:pins, new_pins_map)
+    IO.inspect "#{Sysex.digital_write_parser(state[:pins], pin)}"
     Board.send(state.board, Sysex.digital_write_parser(state[:pins], pin)) # Calculate port and lsb, msb values required
     {:reply, :ok, state}
   end
