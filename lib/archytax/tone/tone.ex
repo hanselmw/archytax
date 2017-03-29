@@ -95,15 +95,34 @@ defmodule Archytax.Tone do
         }
 
 
-  def play(tone, tempo \\ 1)
+  def play(pin, tone, tempo \\ 1)
 
-  def play(tone, tempo) when is_binary(tone) do
+  def play(pin, tone, tempo) when is_binary(tone) do
     tone_atom = String.to_atom(tone)
-    play(tone_atom, tempo)
+    play(pin, tone_atom, tempo)
   end
 
-  def play(tone, tempo) do
+  def play(pin, tone, tempo) do
     IO.puts "#{@tones[tone]} at #{tempo}"
+    frequency = @tones[tone] || 1
+    note_duration = 1000 / tempo
+    delay_value = 1000000 / frequency / 2
+    IO.puts delay_value
+    num_cycles = frequency * note_duration / 1000 |> round
+
+    write_note(pin, delay_value, num_cycles)
+  end
+
+  def write_note(_pin, _delay_value, 0) do
+    :ok
+  end
+
+  def write_note(pin, delay_value, cycle) do
+    Archytax.set_digital_pin(pin, 1)
+    Archytax.Utilities.delay_microseconds(delay_value)
+    Archytax.set_digital_pin(pin, 0)
+    Archytax.Utilities.delay_microseconds(delay_value)
+    write_note(pin, delay_value, cycle - 1)
   end
   
 end

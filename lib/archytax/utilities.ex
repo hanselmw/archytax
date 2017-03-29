@@ -34,4 +34,18 @@ defmodule Archytax.Utilities do
     (value - from_min) * (to_max - to_min) / (from_max - from_min) + to_min |> round
   end
 
+  @doc """
+  Simple alias for timer sleep. Delay on miliseconds
+  """
+  def delay(miliseconds) do
+    :timer.sleep(miliseconds)
+  end
+
+  @doc """
+  Simple wrapper for timer.sleep into microseconds
+  """
+  def delay_microseconds(microseconds) do
+    :timer.sleep (microseconds/1000) |> round
+  end
+
 end
