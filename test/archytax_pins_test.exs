@@ -17,6 +17,44 @@ defmodule ArchytaxConnectionTest do
     }
   }
 
+  test "Get pins" do
+    {:reply, {:ok, pins}, _state} = Archytax.handle_call({:get_pins}, self(), @example_state)
+    assert get_in(pins, [3, :value]) == get_in(@example_state, [:pins, 3, :value])
+  end
+
+  #########################################
+  ############## BLACK BOX ################
+  #########################################
+
+  # Successful calls
+
+  test "Set mode for pin." do
+    {:reply, response, _state} = Archytax.handle_call({:set_pin_mode, {8, 1}}, self(), Map.put(@example_state, :board, create_placeholder_board()) )
+    assert response == :ok
+  end
+
+  test "Set digital pin value." do
+    {:reply, response, _state} = Archytax.handle_call({:set_digital_pin, {8, 1}}, self(), Map.put(@example_state, :board, create_placeholder_board()) )
+    assert response == :ok
+  end
+
+  test "Report digital port." do
+    {:reply, response, _state} = Archytax.handle_call({:report_digital_port, {8, 1}}, self(), Map.put(@example_state, :board, create_placeholder_board()) )
+    assert response == :ok
+  end
+
+  test "Digital write." do
+    {:reply, response, _state} = Archytax.handle_call({:digital_write, {8, 1}}, self(), Map.put(@example_state, :board, create_placeholder_board()) )
+    assert response == :ok
+  end
+
+  test "Analog write." do
+    {:reply, response, _state} = Archytax.handle_call({:analog_write, {8, 1}}, self(), Map.put(@example_state, :board, create_placeholder_board()) )
+    assert response == :ok
+  end
+
+  # Error calls
+
   test "Do not allow set mode for unexisting pin." do
     {:reply, {response, _message}, _state} = Archytax.handle_call({:set_pin_mode, {21, 1}}, self(), @example_state)
     assert response == :error
@@ -42,10 +80,9 @@ defmodule ArchytaxConnectionTest do
     assert response == :error
   end
 
-  test "Get pins" do
-    {:reply, {:ok, pins}, _state} = Archytax.handle_call({:get_pins}, self(), @example_state)
-    assert get_in(pins, [3, :value]) == get_in(@example_state, [:pins, 3, :value])
-  end
+  #########################################
+  ############## WHITE BOX ################
+  #########################################
 
   test "Succesfully update pin mode." do
     new_state = Map.put(@example_state, :board, create_placeholder_board())
