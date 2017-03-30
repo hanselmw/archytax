@@ -26,6 +26,7 @@ defmodule Archytax do
   """
   # TODO set interface on reconnect
   def reconnect(port, opts \\ []) do
+    opts = Keyword.put(opts, :interface, self()) # Set interface PID as the original caller or start_link
     GenServer.call(__MODULE__, {:reconnect, {port, opts}})
   end
 
@@ -214,6 +215,7 @@ defmodule Archytax do
     new_state = %{}
     new_state = Map.put(new_state, :board, board)
     new_state = Map.put(new_state, :code_bin, <<>>)
+    new_state = Map.put(new_state, :interface, opts[:interface])
     {:reply, :ok, new_state}
   end
 
