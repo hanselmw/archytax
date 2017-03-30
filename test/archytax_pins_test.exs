@@ -13,7 +13,8 @@ defmodule ArchytaxConnectionTest do
       7 => %{value: 0, mode: 16},
       8 => %{value: 0, mode: 16},
       9 => %{value: 0, mode: 16},
-    }
+    },
+    board: self()
   }
   use ExUnit.Case
 

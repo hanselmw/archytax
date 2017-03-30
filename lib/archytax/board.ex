@@ -36,6 +36,7 @@ defmodule Archytax.Board do
   returns the whole `pins_map` with the updated attribute.
   """
   def update_pin_attribute(pins_map, pin, attribute, value) do
+    check_pin_usage(pin)
     case pins_map[pin] do
       # Not found pin
       nil ->
@@ -59,6 +60,8 @@ defmodule Archytax.Board do
     new_pins_map
   end
 
+
+  # Parse incoming digital messages
   def parse_digital_message(new_pins_map, _port, _port_value, 8) do
     new_pins_map # return the new pins map with the values updated for the input pins.
   end
@@ -75,6 +78,14 @@ defmodule Archytax.Board do
         pins # this pin reamins the same
       end
     parse_digital_message(pins, port, port_value, counter + 1)
+  end
+
+  defp check_pin_usage(pin) when pin == 0 or pin == 1 do
+    IO.puts ("WARNING: It seems that you are manipulating pin #{pin}.")
+  end
+
+  defp check_pin_usage(pin) do
+    :ok
   end
 
 end
