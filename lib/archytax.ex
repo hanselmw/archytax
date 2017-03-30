@@ -2,7 +2,7 @@ defmodule Archytax do
   @moduledoc """
   This is the Main Module of the Library,
   it serves as a bridge for the interface and the Board,
-  also manage the messages coming from the connected devices.
+  also it manages the messages coming from the connected devices.
   """
 
   require IEx
