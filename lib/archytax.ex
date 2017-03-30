@@ -165,7 +165,7 @@ defmodule Archytax do
   @doc """
   Get the current pins states and values as a Map.
   Useful to get the current value of digital pins.
-  
+
   ## Examples
       iex> {:ok, pins} = Archytax.get_pins
       iex> digital_value = get_in(pins, [13, :value])
@@ -334,10 +334,15 @@ defmodule Archytax do
   # Do Bitwise OR to easily set the correct analog pin value according with Firmata Protocol
   # from 0xC0 to 0xCF
   def handle_call({:report_analog_pin, {pin, val}}, _from, state) do
-    state = state
-      |> Map.put(:pins, Board.report_analog_pin(state[:pins], pin, val))
-    Board.send(state.board, << @report_analog_pin ||| pin, val >>)
-    {:reply, :ok, state}
+    case Board.report_analog_pin(state[:pins], pin, val) do
+      {:ok, new_pins_map} -> 
+        state = state
+          |> Map.put(:pins, new_pins_map)
+        Board.send(state.board, << @report_analog_pin ||| pin, val >>)
+        {:reply, :ok, state}
+      {:error, reason } ->
+        {:reply, {:error, reason}, state}
+    end
   end
 
   def handle_call({:pin_state_query, pin}, _from, state) do
