@@ -4,7 +4,7 @@ defmodule Archytax.Utilities do
   """
 
   @doc """
-  Get true voltage from analog reading. Useful for temperature readings
+  Get true voltage from analog reading. Useful for temperature readings.
   """
   def getVoltage(analog_value) do
     analog_value * 0.004882814
@@ -13,15 +13,16 @@ defmodule Archytax.Utilities do
   @doc """
   Get the equivalent value from `value` in the `{to_min, to_max}` based on the original `value`
   in the range `{from_min, from_max}`
+
   You can send the range limits as four arguments
   Or directly as ranges
   ## Examples
 
       iex> Archytax.Utilities.mapRange(800, 0,1023, 0,255)
-      iex> 199
-      Or
+      199
+      
       iex> Archytax.Utilities.mapRange(800, 0..1023, 0..255)
-      iex> 199
+      199
 
   """
   def mapRange(value, from_range, to_range) do
