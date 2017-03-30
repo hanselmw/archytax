@@ -9,7 +9,15 @@ defmodule Archytax.Mixfile do
      start_permanent: Mix.env == :prod,
      description: description(),
      package: package(),
-     deps: deps()]
+     deps: deps(),
+     # ExDoc Documentation
+     name: "Archytax",
+     source_url: "https://github.com/hanselmw/archytax",
+     docs: [
+            main: "Archytax",
+            extras: ["README.md"]
+           ]
+     ]
   end
 
   # Configuration for the OTP application
@@ -30,7 +38,10 @@ defmodule Archytax.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:nerves_uart, "~> 0.1.1"}]
+    [
+    {:nerves_uart, "~> 0.1.1"},
+    {:ex_doc, "~> 0.14", only: :dev, runtime: false}
+    ]
   end
 
   defp description() do
