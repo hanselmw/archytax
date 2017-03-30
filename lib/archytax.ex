@@ -163,6 +163,13 @@ defmodule Archytax do
   end
 
   @doc """
+  Send reset signal to board.
+  """
+  def reset do
+    GenServer.call(__MODULE__, :reset_board)
+  end
+
+  @doc """
   Get the current pins states and values as a Map.
   Useful to get the current value of digital pins.
 
@@ -174,6 +181,7 @@ defmodule Archytax do
   def get_pins() do
     GenServer.call(__MODULE__, {:get_pins})
   end
+
 
   @doc """
   Get the current state of Archytax.
@@ -347,6 +355,11 @@ defmodule Archytax do
 
   def handle_call({:pin_state_query, pin}, _from, state) do
     Board.send(state.board, <<@start_sysex, @pin_state_query , pin , @sysex_end>>)
+    {:reply, :ok, state}
+  end
+
+  def handle_call(:reset_board, _from, state) do
+    Board.send(state[:board], << @system_reset >>)
     {:reply, :ok, state}
   end
 
