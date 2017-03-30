@@ -84,7 +84,7 @@ defmodule Archytax.Board do
     IO.puts ("WARNING: It seems that you are manipulating pin #{pin}.")
   end
 
-  defp check_pin_usage(pin) do
+  defp check_pin_usage(_pin) do
     :ok
   end
 
