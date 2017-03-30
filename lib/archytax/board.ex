@@ -1,4 +1,9 @@
 defmodule Archytax.Board do
+  @moduledoc """
+  For internal use of Archytax only.
+  Board provides the interface between Archytax and the serial connection with Nerves.UART along with functions that deals with the connected device.
+  All messages issued from Archytax are sent with the board connection.
+  """
   use Bitwise
   
   def init do
@@ -56,8 +61,7 @@ defmodule Archytax.Board do
 
   def report_analog_pin(pins_map, analog_channel, report_value) do
     pin = Enum.find_index(pins_map, fn({_key_number, pin_data}) -> pin_data[:analog_channel] == analog_channel end)
-    {:ok, new_pins_map} = update_pin_attribute(pins_map, pin, :report, report_value)
-    new_pins_map
+    update_pin_attribute(pins_map, pin, :report, report_value)
   end
 
 
