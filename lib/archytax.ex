@@ -289,7 +289,7 @@ defmodule Archytax do
       {:ok, new_pins_map} ->
         state = state
           |> Map.put(:pins, new_pins_map)
-        IO.inspect "#{Sysex.digital_write_parser(state[:pins], pin)}"
+        # IO.inspect "#{Sysex.digital_write_parser(state[:pins], pin)}"
         Board.send(state.board, Sysex.digital_write_parser(state[:pins], pin)) # Calculate port and lsb, msb values required
         {:reply, :ok, state}
 
