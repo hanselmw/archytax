@@ -4,12 +4,13 @@ defmodule Archytax.Sensors.Temperature do
   """
 
   @doc """
-  Get temperature from voltage in the specified unit of measurement for temperature
+  Get temperature from voltage in the specified unit of measurement `atom` for temperature.
+
   Valid temperatures: `:celsius`, `:fahrenheit`, `:kelvin`.
   ## Examples
 
       iex> Archytax.Sensors.Temperature.getTempFromVoltage(:celsius, 0.92773466)
-      iex> 42.7734660
+      42.7734660
 
   """
   def getTempFromVoltage(:celsius, voltage) do
@@ -26,14 +27,16 @@ defmodule Archytax.Sensors.Temperature do
 
 
   @doc """
-  Convert temperature :from, :to according to `temp` value.
+  Convert temperature from `atom1`, to `atom2` according to `temp` value.
+
   Valid temperature units: `:celsius`, `:fahrenheit`, `:kelvin`.
+
   ## Examples
       iex> Archytax.Sensors.Temperature.convertTemp(:celsius, :kelvin, 31.0)
-      iex> 304.15
+      304.15
 
       iex> Archytax.Sensors.Temperature.convertTemp(:kelvin, :celsius, 304.15)
-      iex> 31.0
+      31.0
   """
   def convertTemp(:celsius, :fahrenheit, temp) do
     temp * (9.0/5.0) + 32.0
