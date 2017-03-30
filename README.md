@@ -1,6 +1,7 @@
 # Archytax
 
-**TODO: Add description**
+## About
+Archytax Elixir implementation for Firmata Protocol.
 
 ## Installation
 
