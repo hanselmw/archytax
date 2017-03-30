@@ -22,7 +22,7 @@ defmodule Archytax do
   end
 
   @doc """
-  Try to create a new connection using the existing Board GenServer
+  Try to create a new connection using the existing Board GenServer.
   """
   # TODO set interface on reconnect
   def reconnect(port, opts \\ []) do
@@ -38,6 +38,7 @@ defmodule Archytax do
 
   @doc """
   Issue a sysex command message to the Board.
+
   `command` is always required, `data` is optional.
   ## Examples
       iex> Archytax.sysex_write(<< 0xF0 >>)
@@ -53,6 +54,16 @@ defmodule Archytax do
   @doc """
   Set the pin mode of the specified mode, for pin modes codes, check firmata documentation:
   https://github.com/firmata/protocol/blob/master/protocol.md
+  
+  ## Examples 
+      iex> Archytax.set_pin_mode(13, 1)
+      :ok
+
+      iex> Archytax.set_pin_mode(9, 3)
+      :ok
+
+      iex> Archytax.set_pin_mode(999, 1)
+      {:error, "Pin not found"}
   """
   def set_pin_mode(pin_number, mode) do
     GenServer.call(__MODULE__, {:set_pin_mode, {pin_number, mode}})
@@ -60,23 +71,31 @@ defmodule Archytax do
 
   @doc """
   Set the digital value for the specified `pin_number`.
+
   ## Examples
       iex> Archytax.set_digital_pin(13, 1)
       :ok
 
       iex> Archytax.set_digital_pin(13, 0)
       :ok
+
+      iex> Archytax.set_digital_pin(999, 1)
+      {:error, "Pin not found"}
   """
   def set_digital_pin(pin_number, val) do
     GenServer.call(__MODULE__, {:set_digital_pin, {pin_number, val}})
   end
 
   @doc """
-  Send digital MIDI signal value `val` to the specified `pin_number`
+  Send digital MIDI signal value `val` to the specified `pin_number`.
   Note: If possible use set_digital_pin/2 instead.
+
   ## Examples
       iex> Archytax.digital_write(13, 1)
       :ok
+
+      iex> Archytax.digital_write(999, 1)
+      {:error, "Pin not found"}
   """
   def digital_write(pin_number, val) do
     GenServer.call(__MODULE__, {:digital_write, {pin_number, val}})
@@ -84,10 +103,15 @@ defmodule Archytax do
 
   @doc """
   Send analog value `val` to the specified `pin_number`.
+
   Note: `pin_number` must be inside the range from 0 to 15 as specified by MIDI message format.
+
   ## Examples
       iex> Archytax.analog_write(9, 222)
       :ok
+
+      iex> Archytax.analog_write(999, 1)
+      {:error, "Pin not found"}
   """
   def analog_write(pin_number, val) do
     GenServer.call(__MODULE__, {:analog_write, {pin_number, val}})
@@ -95,10 +119,15 @@ defmodule Archytax do
 
   @doc """
   Enable or Disable digital port reporting according to the  `val` provided for the specified `pin`.
+
   disable(0) / enable(non-zero)
+
   ## Examples
       iex> Archytax.report_digital_port(5, 1)
       :ok
+
+      iex> Archytax.report_digital_port(999, 1)
+      {:error, "Pin not found"}
   """
   def report_digital_port(pin, val) do
     GenServer.call(__MODULE__, {:report_digital_port, {pin, val}})
@@ -106,6 +135,8 @@ defmodule Archytax do
 
   @doc """
   Enable or Disable analog pin reporting according to the  `val` provided for the specified `pin`.
+  
+  Note: `pin` refers to the analog pin (i.e. A0, A1, etc.)
   disable(0) / enable(non-zero)
   ## Examples
       iex> Archytax.report_analog_pin(5, 1)
@@ -116,7 +147,8 @@ defmodule Archytax do
   end
 
   @doc """
-  Get the state of the specified `pin`
+  Get the state of the specified `pin`.
+
   NOTE: The pin state is any data written to the pin (it is important to note that pin state != pin value).
   """
   def pin_state_query(pin) do
@@ -133,6 +165,7 @@ defmodule Archytax do
   @doc """
   Get the current pins states and values as a Map.
   Useful to get the current value of digital pins.
+  
   ## Examples
       iex> {:ok, pins} = Archytax.get_pins
       iex> digital_value = get_in(pins, [13, :value])
