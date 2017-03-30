@@ -4,23 +4,18 @@ defmodule ArchytaxConnectionTest do
     version: {2, 5},
     firmware_name: "StandardFirmata.ino",
     pins: %{
-      0 => %{value: 0, mode: 16},
-      1 => %{value: 0, mode: 16},
-      2 => %{value: 0, mode: 16},
-      3 => %{value: 0, mode: 16},
-      4 => %{value: 0, mode: 16},
-      5 => %{value: 0, mode: 16},
-      6 => %{value: 0, mode: 16},
-      7 => %{value: 0, mode: 16},
-      8 => %{value: 0, mode: 16},
-      9 => %{value: 0, mode: 16},
+      0 => %{value: 0, mode: 16, report: 0},
+      1 => %{value: 0, mode: 16, report: 0},
+      2 => %{value: 0, mode: 16, report: 0},
+      3 => %{value: 0, mode: 16, report: 0},
+      4 => %{value: 0, mode: 16, report: 0},
+      5 => %{value: 0, mode: 16, report: 0},
+      6 => %{value: 0, mode: 16, report: 0},
+      7 => %{value: 0, mode: 16, report: 0},
+      8 => %{value: 0, mode: 16, report: 0},
+      9 => %{value: 0, mode: 16, report: 0},
     }
   }
-
-  test "Get pins" do
-    {:reply, {:ok, pins}, _state} = Archytax.handle_call({:get_pins}, self(), @example_state)
-    assert get_in(pins, [3, :value]) == get_in(@example_state, [:pins, 3, :value])
-  end
 
   #########################################
   ############## BLACK BOX ################
@@ -112,6 +107,16 @@ defmodule ArchytaxConnectionTest do
     new_state = Map.put(@example_state, :board, create_placeholder_board())
     {:reply, :ok , state} = Archytax.handle_call({:analog_write, {8, 200}}, self(), new_state)
     assert get_in(state, [:pins, 8, :value]) == 200
+  end
+
+  test "Get pins" do
+    {:reply, {:ok, pins}, _state} = Archytax.handle_call({:get_pins}, self(), @example_state)
+    assert get_in(pins, [3, :value]) == get_in(@example_state, [:pins, 3, :value])
+  end
+
+  test "Get Firmware name" do
+    {:reply, {:ok, current_state}, _state} = Archytax.handle_call({:get_all}, self(), @example_state)
+    assert get_in(current_state, [:firmware_name]) == get_in(@example_state, [:firmware_name])
   end
 
   def create_placeholder_board do
