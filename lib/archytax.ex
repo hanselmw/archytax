@@ -39,7 +39,7 @@ defmodule Archytax do
   @doc """
   Issue a sysex command message to the Board.
   `command` is always required, `data` is optional.
-  ## Example
+  ## Examples
       iex> Archytax.sysex_write(<< 0xF0 >>)
       :ok
 
@@ -60,7 +60,7 @@ defmodule Archytax do
 
   @doc """
   Set the digital value for the specified `pin_number`.
-  ## Example
+  ## Examples
       iex> Archytax.set_digital_pin(13, 1)
       :ok
 
@@ -74,7 +74,7 @@ defmodule Archytax do
   @doc """
   Send digital MIDI signal value `val` to the specified `pin_number`
   Note: If possible use set_digital_pin/2 instead.
-  ## Example
+  ## Examples
       iex> Archytax.digital_write(13, 1)
       :ok
   """
@@ -96,7 +96,7 @@ defmodule Archytax do
   @doc """
   Enable or Disable digital port reporting according to the  `val` provided for the specified `pin`.
   disable(0) / enable(non-zero)
-  ## Example
+  ## Examples
       iex> Archytax.report_digital_port(5, 1)
       :ok
   """
@@ -107,7 +107,7 @@ defmodule Archytax do
   @doc """
   Enable or Disable analog pin reporting according to the  `val` provided for the specified `pin`.
   disable(0) / enable(non-zero)
-  ## Example
+  ## Examples
       iex> Archytax.report_analog_pin(5, 1)
       :ok
   """
