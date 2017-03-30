@@ -84,10 +84,34 @@ defmodule ArchytaxConnectionTest do
   ############## WHITE BOX ################
   #########################################
 
-  test "Succesfully update pin mode." do
+  test "Check pin mode after update." do
     new_state = Map.put(@example_state, :board, create_placeholder_board())
     {:reply, :ok , state} = Archytax.handle_call({:set_pin_mode, {8, 1}}, self(), new_state)
     assert get_in(state, [:pins, 8, :mode]) == 1
+  end
+
+  test "Check digital pin value after update." do
+    new_state = Map.put(@example_state, :board, create_placeholder_board())
+    {:reply, :ok , state} = Archytax.handle_call({:set_digital_pin, {8, 1}}, self(), new_state)
+    assert get_in(state, [:pins, 8, :value]) == 1
+  end
+
+  test "Check digital pin value after digital write." do
+    new_state = Map.put(@example_state, :board, create_placeholder_board())
+    {:reply, :ok , state} = Archytax.handle_call({:digital_write, {8, 1}}, self(), new_state)
+    assert get_in(state, [:pins, 8, :value]) == 1
+  end
+
+  test "Check digital pin state after report digital port." do
+    new_state = Map.put(@example_state, :board, create_placeholder_board())
+    {:reply, :ok , state} = Archytax.handle_call({:report_digital_port, {8, 1}}, self(), new_state)
+    assert get_in(state, [:pins, 8, :report]) == 1
+  end
+
+  test "Check pin value after analog write." do
+    new_state = Map.put(@example_state, :board, create_placeholder_board())
+    {:reply, :ok , state} = Archytax.handle_call({:analog_write, {8, 200}}, self(), new_state)
+    assert get_in(state, [:pins, 8, :value]) == 200
   end
 
   def create_placeholder_board do
