@@ -1,5 +1,7 @@
 # Archytax
 
+[![Build Status](https://travis-ci.org/hanselmw/archytax.svg?branch=master)](https://travis-ci.org/hanselmw/archytax)
+
 ## About
 Archytax Elixir implementation for Firmata Protocol.
 
