@@ -53,7 +53,7 @@ defmodule Archytax.Mixfile do
   defp package() do
     [
       files: ["lib", "mix.exs", "README.md", "LICENSE.txt"],
-      maintainers: ["Keyvan Fatehi"],
+      maintainers: ["vicvans20, hanselmw"],
       licenses: ["GPL"],
       links: %{
         "GitHub" => "https://github.com/hanselmw/archytax",
