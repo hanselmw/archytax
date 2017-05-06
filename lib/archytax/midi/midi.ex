@@ -1,4 +1,5 @@
 defmodule Archytax.Midi do
+use Bitwise
   @moduledoc """
   Note ON and Note OFF interaction.
   """
@@ -132,5 +133,36 @@ defmodule Archytax.Midi do
     B8: 107,
     B9: 119,
   }
+
+  def noteOn(pitch, velocity) do
+    Archytax.write(0x90)
+    Archytax.write(pitch)
+    Archytax.write(velocity)
+  end
+
+  def noteOff(pitch, velocity) do
+    Archytax.write(0x80)
+    Archytax.write(pitch)
+    Archytax.write(velocity)
+  end
+
+  def polyphonicKeyPressure(pitch, velocity) do
+    Archytax.write(0xA0)
+    Archytax.write(pitch)
+    Archytax.write(velocity)
+  end
+
+  def channelPressure(pressure) do
+    Archytax.write(0xD0)
+    Archytax.write(pressure)
+  end
+
+  def pitchBendChange(value) do
+    lowValue = value &&& 0x7F
+    highValue = value >>> 7
+    Archytax.write(0xE0)
+    Archytax.write(lowValue)
+    Archytax.write(highValue)
+  end
   
 end
