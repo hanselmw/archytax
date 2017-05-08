@@ -384,7 +384,6 @@ defmodule Archytax do
   end
 
   def handle_info({:nerves_uart, _port, data}, state) do
-    IO.inspect data
     outbox = []
     bytes_string = state.code_bin <> data
     {outbox, new_byte_string} = Sysex.parse({outbox, << >>}, bytes_string)
