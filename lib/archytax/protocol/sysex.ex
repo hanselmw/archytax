@@ -97,6 +97,7 @@ defmodule Archytax.Protocol.Sysex do
     { pin_map, _anything } = Enum.reduce(pin_list, { %{}, {:mode, 0}}, &eval_pin_capability/2 )
     new_map = Map.put(pin, :supported_modes, pin_map)
     new_map = Map.put(new_map, :mode, @unknown)
+    new_map = Map.put(new_map, :value, nil)
     # [ new_map | pins_store ]
     Map.put(pins_store, pin_number, new_map)
   end
