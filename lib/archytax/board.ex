@@ -61,7 +61,7 @@ defmodule Archytax.Board do
 
   def report_analog_pin(pins_map, analog_channel, report_value) do
     pin = Enum.find_index(pins_map, fn({_key_number, pin_data}) -> pin_data[:analog_channel] == analog_channel end)
-    update_pin_attribute(pins_map, pin, :report, report_value)
+    update_pin_attribute(pins_map, pin, :report, report_value) # {:ok, pins_map}
   end
 
 
@@ -77,7 +77,8 @@ defmodule Archytax.Board do
     pins = 
       if pin_record && (pin_record[:mode] == 0 || pin_record[:mode] == 11) do # If pin is set as digital input or pullup get the digital value reading
         digital_value = (port_value >>> (counter &&& 0x07)) &&& 0x01 # Get the digital value for the pin number IN the port. (0..8)
-        update_pin_attribute(pins, index, :value, digital_value) # updated pins map
+        {:ok, new_map} = update_pin_attribute(pins, index, :value, digital_value) # updated pins map
+        new_map
       else
         pins # this pin reamins the same
       end
