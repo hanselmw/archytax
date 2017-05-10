@@ -13,7 +13,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:archytax, "~> 0.1.0"}]
+      [{:archytax, "~> 0.1.2"}]
     end
     ```
 
